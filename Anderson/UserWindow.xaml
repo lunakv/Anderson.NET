@@ -1,0 +1,20 @@
+﻿<Window x:Class="Anderson.UserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Anderson"
+        mc:Ignorable="d"
+        Title="UserWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="683*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="InputMessageBox" Grid.Column="1" Margin="10,370,68,10" TextWrapping="Wrap" />
+        <Button x:Name="SendButton" Click="SendButton_Click" Content="Send" Grid.Column="1" Margin="620,370,10,10"/>
+        <ListBox x:Name="ChannelsList" HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="109"/>
+        <TextBox x:Name ="AllMessagesBox" Grid.Column="1" HorizontalAlignment="Left" Height="344" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="663"/>
+
+    </Grid>
+</Window>
