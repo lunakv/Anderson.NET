@@ -1,11 +1,6 @@
-﻿using Matrix.Client;
-using Matrix.Structures;
-using System;
-using Matrix;
-using System.IO;
-using System.Security;
+﻿using System;
 using System.Windows;
-using System.Net.Http;
+using Anderson.Backend;
 
 namespace Anderson
 {
@@ -14,11 +9,11 @@ namespace Anderson
     /// </summary>
     public partial class LoginWindow : Window
     {
-        ApiConnector api; 
+        ApiConnector api = new ApiConnector(); 
         public LoginWindow()
         {
             InitializeComponent();
-            api = new ApiConnector(this);
+            api.OnLogin += ShowLoginText;
         }
 
         private void Login_Button_Click(object sender, RoutedEventArgs e)
@@ -27,8 +22,8 @@ namespace Anderson
             LoginButton.Content = "Connecting...";
             var name = UserName.Text;
             var passwd = UserPasswd.Password;
-            var login = new Action<string,string,Action<string>>(api.Login);
-            login.BeginInvoke(name,passwd,ShowLoginText,null, null);
+            var login = new Action<string,string>(api.Login);
+            login.BeginInvoke(name,passwd,null, null);
         }
 
         private void Start_Button_Click(object sender, RoutedEventArgs e)
@@ -41,15 +36,30 @@ namespace Anderson
             LoginButton.IsEnabled = true;
         }
 
-        private void ShowLoginText(string text)
+        private void ShowLoginText(string error)
         {
-            LoginBox.Text = text;
-            LoginButton.IsEnabled = true;
-            LoginButton.Content = Application.Current.Resources["LoginBox_text"];
-            var userW = new UserWindow(api);
-            App.Current.MainWindow = userW;
-            this.Close();
-            userW.Show();
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(
+                    System.Windows.Threading.DispatcherPriority.Normal,
+                    new Action<string>(ShowLoginText), error
+                    );
+                return;
+            }
+
+            if (error != null)
+            {
+                LoginBox.Text = error;
+                LoginButton.IsEnabled = true;
+                LoginButton.Content = Application.Current.Resources["LoginBox_text"];
+            }
+            else
+            {
+                var userW = new UserWindow(api);
+                App.Current.MainWindow = userW;
+                this.Close();
+                userW.Show();
+            }
         }
     }
 }

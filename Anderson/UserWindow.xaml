@@ -5,16 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Anderson"
         mc:Ignorable="d"
-        Title="UserWindow" Height="450" Width="800">
+        Title="UserWindow" Height="450" Width="800" Closed="Window_Closed">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="109*"/>
             <ColumnDefinition Width="683*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="InputMessageBox" Grid.Column="1" Margin="10,370,68,10" TextWrapping="Wrap" />
-        <Button x:Name="SendButton" Click="SendButton_Click" Content="Send" Grid.Column="1" Margin="620,370,10,10"/>
+        <TextBox x:Name="InputMessageBox" AcceptsReturn="True" Grid.Column="1" Margin="10,365,68,10" TextWrapping="Wrap">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Return" Modifiers="Shift" Command="{x:Static local:UserWindow.SendMessage}"  />
+            </TextBox.InputBindings>
+        </TextBox>
+        <Button x:Name="SendButton" Command="{x:Static local:UserWindow.SendMessage}" Content="Send" Grid.Column="1" Margin="620,365,10,10"/>
         <ListBox x:Name="ChannelsList" HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="109"/>
-        <TextBox x:Name ="AllMessagesBox" Grid.Column="1" HorizontalAlignment="Left" Height="344" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="663"/>
+        <TextBox x:Name="AllMessagesBox" IsReadOnly="true" Grid.Column="1" HorizontalAlignment="Left" Height="344" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="663"/>
 
     </Grid>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:UserWindow.SendMessage}" Executed="Send_Message"/>
+    </Window.CommandBindings>
 </Window>

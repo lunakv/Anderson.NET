@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Windows;
 using Matrix;
 using Matrix.Client;
 using Matrix.Structures;
 
-namespace Anderson
+namespace Anderson.Backend
 {
     public delegate void EventHandler(MatrixEvent message);
     public delegate void LoginHandler(string error);
+    public delegate void ShowRoomHandler(string error, MatrixEvent[] messages);
+    public delegate void SyncFinishedHandler(string error);
 
     public class ApiConnector : IDisposable
     {
-        Window UI;
         MatrixClient client;
         static readonly string homeserverUrl = "https://matrix.org";
         Dictionary<MatrixRoom, List<MatrixEvent>> events = new Dictionary<MatrixRoom, List<MatrixEvent>>();
@@ -23,15 +23,12 @@ namespace Anderson
 
         public event EventHandler OnMessage;
         public event LoginHandler OnLogin;
+        public event ShowRoomHandler OnShowRoom;
+        public event SyncFinishedHandler OnSync;
 
-        public ApiConnector(Window ui)
+        public void Login(string name, string passwd)
         {
-            UI = ui;
-        }
-
-        public void Login(string name, string passwd, Action<string> handler)
-        {
-            var res = "";
+            string res = null;
             
             try
             {
@@ -52,12 +49,6 @@ namespace Anderson
 
                 }
                 client.StartSync();
-                foreach (var room in client.GetAllRooms())
-                {
-                    res += $"Found room: {room.ID}\n";
-                    res += $"This room has canonical alias {room.CanonicalAlias}\n";
-                    res += $"This room has name {room.HumanReadableName}\n";
-                }
             }
             catch (MatrixException e)
             {
@@ -73,12 +64,10 @@ namespace Anderson
                 res = "We have encountered a network error. Please check your connection.";
             }
 
-            UI.Dispatcher.BeginInvoke(
-                System.Windows.Threading.DispatcherPriority.Normal,
-                handler, res);
+            OnLogin.Invoke(res);
         }
 
-        public void ShowRoom(string roomId, Action<MatrixEvent[]> handler)
+        public void ShowRoom(string roomId)
         {
             var room = client.JoinRoom(roomId);
             var msgs = events[room];
@@ -92,10 +81,7 @@ namespace Anderson
                 }
             }
 
-            UI.Dispatcher.BeginInvoke(
-                System.Windows.Threading.DispatcherPriority.Normal,
-                handler, res.ToArray()
-                );
+            OnShowRoom.Invoke(null, res.ToArray());
         }
 
         public void SyncRooms()
@@ -108,6 +94,8 @@ namespace Anderson
                 room.OnMessage += MessageHandler;
                 room.OnEvent += EventHandler;
             }
+
+            OnSync(null);
         }
 
         void EventHandler(MatrixRoom room, MatrixEvent msg)
@@ -115,15 +103,11 @@ namespace Anderson
             events[room].Add(msg);
         }
 
-        public void MessageHandler(MatrixRoom room, MatrixEvent msg) {
+        void MessageHandler(MatrixRoom room, MatrixEvent msg) {
             if (room == CurrentRoom && OnMessage != null)
             {
-                UI.Dispatcher.BeginInvoke(
-                    System.Windows.Threading.DispatcherPriority.Normal,
-                    OnMessage, msg
-                    );
-            }
-            
+                OnMessage.Invoke(msg);
+            }       
         }
 
         public RoomDisplay[] GetRoomNames()
@@ -145,7 +129,7 @@ namespace Anderson
 
         public void SendMessage(string message)
         {
-            CurrentRoom.SendMessage(new MMessageText { body = message });
+            CurrentRoom?.SendMessage(new MMessageText { body = message });
         }
 
         public void Dispose()

@@ -114,7 +114,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ApiConnector.cs" />
     <Compile Include="LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -155,6 +154,10 @@
     <ProjectReference Include="..\..\..\..\Documents\matrix-dotnet-sdk-master\Matrix\Matrix.csproj">
       <Project>{38488934-1fc7-49a0-9af8-64520fe40528}</Project>
       <Name>Matrix</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Anderson.Backend\Anderson.Backend.csproj">
+      <Project>{B2134F75-7A2E-4D4C-8B97-AEB4D840A67A}</Project>
+      <Name>Anderson.Backend</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
