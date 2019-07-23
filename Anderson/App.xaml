@@ -2,8 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Anderson"
+             xmlns:views="clr-namespace:Anderson.Views"
              xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="Anderson.App"
-             StartupUri="LoginWindow.xaml">
+             StartupUri="Views/LoginWindow.xaml">
+    
     <Application.Resources>
 
         <System:String x:Key="LoginBox_text">Login</System:String>

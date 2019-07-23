@@ -1,9 +1,9 @@
-﻿<Window x:Class="Anderson.UserWindow"
+﻿<Window x:Class="Anderson.Views.UserWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Anderson"
+        xmlns:local="clr-namespace:Anderson.Views"
         mc:Ignorable="d"
         Title="UserWindow" Height="450" Width="800" Closed="Window_Closed">
     <Grid>
@@ -18,10 +18,14 @@
         </TextBox>
         <Button x:Name="SendButton" Command="{x:Static local:UserWindow.SendMessage}" Content="Send" Grid.Column="1" Margin="620,365,10,10"/>
         <ListBox x:Name="ChannelsList" HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="109"/>
-        <TextBox x:Name="AllMessagesBox" IsReadOnly="true" Grid.Column="1" HorizontalAlignment="Left" Height="344" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="663"/>
+        <TextBox x:Name="AllMessagesBox" Visibility="Hidden" IsReadOnly="true" Grid.Column="1" HorizontalAlignment="Left" Height="344" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="663"/>
+        <FlowDocumentScrollViewer  x:Name="MessageViewer" Grid.Column="1" Margin="10,0,10,65">
+            <FlowDocument x:Name="MessageContent">
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
 
     </Grid>
     <Window.CommandBindings>
-        <CommandBinding Command="{x:Static local:UserWindow.SendMessage}" Executed="Send_Message"/>
+        <CommandBinding Command="{x:Static local:UserWindow.SendMessage}" Executed="Message_Sent"/>
     </Window.CommandBindings>
 </Window>

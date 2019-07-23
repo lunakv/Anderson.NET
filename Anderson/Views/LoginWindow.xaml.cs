@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Windows;
-using Anderson.Backend;
 
-namespace Anderson
+namespace Anderson.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

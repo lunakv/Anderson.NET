@@ -1,10 +1,11 @@
-﻿using Anderson.Backend;
+﻿
 using Matrix.Structures;
 using System;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 
-namespace Anderson
+namespace Anderson.Views
 {
     /// <summary>
     /// Interaction logic for UserWindow.xaml
@@ -36,8 +37,11 @@ namespace Anderson
                 Dispatcher.Invoke(new Action<MatrixEvent>(AddMessage), message);
                 return;
             }
-
-            AllMessagesBox.Text += message.content.mxContent["body"].ToString() + "\n";
+            var para = new Paragraph();
+            para.Inlines.Add(message.content.mxContent["body"].ToString());
+            MessageContent.Blocks.Add(para);
+            para.BringIntoView();
+            //AllMessagesBox.Text += message.content.mxContent["body"].ToString() + "\n";
         }
 
         public void Room_Selected(object sender, EventArgs e)
@@ -66,12 +70,12 @@ namespace Anderson
                 var msg = feed[i];
                 if (msg.type == "m.room.message")
                 {
-                    AllMessagesBox.Text += $"{msg.content.mxContent["body"].ToString()}\n";
+                    AddMessage(msg);
                 }
             }
         }
 
-        private void Send_Message(object sender, RoutedEventArgs e)
+        private void Message_Sent(object sender, RoutedEventArgs e)
         {
             Action<string> send = api.SendMessage;
             send.BeginInvoke(InputMessageBox.Text, null, null);

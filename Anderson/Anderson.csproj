@@ -103,10 +103,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="UserWindow.xaml.cs">
+    <Compile Include="Models\ApiConnector.cs" />
+    <Compile Include="ViewModels\LoginBinder.cs" />
+    <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="LoginWindow.xaml">
+    <Page Include="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -114,11 +116,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LoginWindow.xaml.cs">
+    <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UserWindow.xaml">
+    <Page Include="Views\UserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -155,10 +157,7 @@
       <Project>{38488934-1fc7-49a0-9af8-64520fe40528}</Project>
       <Name>Matrix</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Anderson.Backend\Anderson.Backend.csproj">
-      <Project>{B2134F75-7A2E-4D4C-8B97-AEB4D840A67A}</Project>
-      <Name>Anderson.Backend</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

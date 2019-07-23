@@ -7,7 +7,7 @@ using Matrix;
 using Matrix.Client;
 using Matrix.Structures;
 
-namespace Anderson.Backend
+namespace Anderson
 {
     public delegate void EventHandler(MatrixEvent message);
     public delegate void LoginHandler(string error);
