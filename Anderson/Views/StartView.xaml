@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Button Content="Login to Matrix.org" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding Path=FirstButtonClicked}"/>
+        <Button Content="Login to Matrix.org" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding Path=FirstButton_Clicked}"/>
     </Grid>
 </UserControl>

@@ -19,7 +19,7 @@ namespace Anderson.ViewModels
             set
             {
                 _errorMessage = value;
-                OnPropertyChanged("ErrorMessage");
+                OnPropertyChanged(nameof(ErrorMessage));
             }
         }
 
@@ -38,5 +38,7 @@ namespace Anderson.ViewModels
         {
             ViewChanged?.BeginInvoke(name, null, null);
         }
+
+        public virtual void SwitchedToThis() { }
     }
 }

@@ -13,7 +13,7 @@ namespace Anderson.Models
         string[] _token;
         string _tokenPath;
 
-        public event LoginHandler OnLoginAttempt;
+        public event LoginHandler LoginAttempted;
 
         public LoginModel(MatrixClient client)
         {
@@ -54,7 +54,15 @@ namespace Anderson.Models
                 }
             }
 
-            OnLoginAttempt?.BeginInvoke(error, null, null);
+            LoginAttempted?.BeginInvoke(error, null, null);
+        }
+
+        public void Logout()
+        {
+            DeleteToken();
+            _client.Dispose();
+            ModelFactory.EstablishConnection(ModelFactory.Url);
+            _client = ModelFactory.GetApiClient();
         }
 
         public bool RequiresLogin()
@@ -66,16 +74,24 @@ namespace Anderson.Models
         {
             string error = null;
             if (_token == null) throw new InvalidOperationException("No login token exists.");
-            _client.UseExistingToken(_token[0], _token[1]);
+            _client.UseExistingToken(_token[1], _token[0]);
             _client.StartSync();
 
-            OnLoginAttempt?.BeginInvoke(error, null, null);
+            LoginAttempted?.BeginInvoke(error, null, null);
         }
 
         public void SaveToken(MatrixLoginResponse login)
         {
             _token = new[] { login.access_token, login.user_id };
             File.WriteAllText(_tokenPath, $"{_token[0]}${_token[1]}");
+        }
+
+        public void DeleteToken()
+        {
+            if (File.Exists(_tokenPath))
+            {
+                File.Delete(_tokenPath);
+            }
         }
 
     }

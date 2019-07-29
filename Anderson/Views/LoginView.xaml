@@ -13,7 +13,7 @@
         <GroupBox Header="Password" HorizontalAlignment="Left" Height="67" Margin="449,172,0,0" VerticalAlignment="Top" Width="183">
             <PasswordBox x:Name="PassBox" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" VerticalAlignment="Top" Width="151"/>
         </GroupBox>
-        <Button Content="Login" Command="{Binding Path=LoginAttempt}" CommandParameter="{Binding ElementName=PassBox}" HorizontalAlignment="Left" Margin="351,273,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Login" Command="{Binding Path=LoginButton_Clicked}" CommandParameter="{Binding ElementName=PassBox}" HorizontalAlignment="Left" Margin="351,273,0,0" VerticalAlignment="Top" Width="75"/>
         <Label Content="{Binding Path=ErrorMessage}" HorizontalAlignment="Center" Margin="0,130" VerticalAlignment="Top" Foreground="#FFC52F2F"/>
 
     </Grid>

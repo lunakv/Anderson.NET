@@ -23,5 +23,10 @@ namespace Anderson
         {
             InitializeComponent();
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            (DataContext as IDisposable)?.Dispose();
+        }
     }
 }

@@ -18,13 +18,16 @@ namespace Anderson.ViewModels
         public LoginViewModel(LoginModel loginBack)
         {
             _loginBack = loginBack;
-            LoginAttempt = new DelegateCommand<object>(
+
+            LoginButton_Clicked = new DelegateCommand<object>(
                 OnLoginClick,
                 o => !string.IsNullOrEmpty(Username) && !LoginInProgress
                 ) ;
+
         }
 
-        public DelegateCommand<object> LoginAttempt { get; }
+        #region Commands & properties
+        public DelegateCommand<object> LoginButton_Clicked { get; }
 
         public override string Name => "Login";
 
@@ -35,7 +38,7 @@ namespace Anderson.ViewModels
             set
             {
                 _username = value;
-                LoginAttempt.RaiseCanExecuteChanged();
+                LoginButton_Clicked.RaiseCanExecuteChanged();
             }
         }
 
@@ -46,32 +49,36 @@ namespace Anderson.ViewModels
             set
             {
                 _loginInProgress = value;
-                LoginAttempt.RaiseCanExecuteChanged();
+                LoginButton_Clicked.RaiseCanExecuteChanged();
             }
         }
+        #endregion
 
+        #region Methods
         private void LoginFinished(string error)
         {
-            
+            LoginInProgress = false;
+            _loginBack.LoginAttempted -= LoginFinished;
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
-                LoginInProgress = false;
             }
             else
             {
+                ErrorMessage = "";
                 SendViewChange("User");
             }
         }
 
         private void OnLoginClick(object obj)
         {
+            _loginBack.LoginAttempted += LoginFinished;
             var pb = obj as PasswordBox;
             Action<string,string> login = _loginBack.Login;
-            _loginBack.OnLoginAttempt += LoginFinished;
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
             login.BeginInvoke(Username, pb.Password, null, null);
         }
+        #endregion
     }
 }

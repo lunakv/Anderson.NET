@@ -9,21 +9,22 @@ using System.Windows.Input;
 
 namespace Anderson.ViewModels
 {
-    class ApplicationViewModel : ViewModelBase
+    class ApplicationViewModel : ViewModelBase, IDisposable
     {
         List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
 
         public ApplicationViewModel()
         {
-            var factory = new ModelFactory();
-            Action connect = factory.EstablishConnection;
-            var wait = connect.BeginInvoke(null, null);
-
+            
+            Action<string> connect = ModelFactory.EstablishConnection;
+            var wait = connect.BeginInvoke(Url, null, null);
             connect.EndInvoke(wait);
-            var loginM = factory.GetLoginModel();
-            _pageViewModels.Add(new StartViewModel { LoginBack = loginM });
+            LoginModel loginM = ModelFactory.GetLoginModel();
+            PersonModel personM = ModelFactory.GetUserModel();
+            RoomModel roomM = ModelFactory.GetRoomModel();
+            _pageViewModels.Add(new StartViewModel(loginM));
             _pageViewModels.Add(new LoginViewModel(loginM));
-            _pageViewModels.Add(new UserViewModel { UserBack = factory.GetUserModel() });
+            _pageViewModels.Add(new UserViewModel(loginM, personM, roomM));
 
             foreach(var vm in _pageViewModels)
             {
@@ -31,9 +32,14 @@ namespace Anderson.ViewModels
             }
 
             CurrentPageViewModel = _pageViewModels[0];
+            OnClose = new DelegateCommand(ModelFactory.DisposeApiClient);
         }
 
+        public DelegateCommand OnClose { get; set; }
+
         public override string Name => "Application";
+
+        private string Url => "https://lunakv.modular.im";
 
         private ViewModelBase _currentPageViewModel;
         public ViewModelBase CurrentPageViewModel
@@ -44,7 +50,7 @@ namespace Anderson.ViewModels
                 if (_currentPageViewModel != value)
                 {
                     _currentPageViewModel = value;
-                    OnPropertyChanged("CurrentPageViewModel");
+                    OnPropertyChanged(nameof(CurrentPageViewModel));
                 }
 
             }
@@ -54,6 +60,12 @@ namespace Anderson.ViewModels
         {
             ViewModelBase newVM = _pageViewModels.FirstOrDefault(vm => vm.Name == vmName);
             CurrentPageViewModel = newVM ?? throw new NotImplementedException($"No ViewModel with name {vmName} exists.");
+            newVM.SwitchedToThis();
+        }
+
+        public void Dispose()
+        {
+            ModelFactory.DisposeApiClient();
         }
     }
 }

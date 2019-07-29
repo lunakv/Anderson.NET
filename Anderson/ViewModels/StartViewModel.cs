@@ -11,14 +11,19 @@ namespace Anderson.ViewModels
 {
     class StartViewModel : ViewModelBase
     {
-        public StartViewModel()
+        LoginModel _loginBack;
+
+        public StartViewModel(LoginModel loginBack)
         {
-            FirstButtonClicked = new DelegateCommand(
+            _loginBack = loginBack;
+            FirstButton_Clicked = new DelegateCommand(
                 SwitchViewModels,
                 () => !LoginInProgress
                 );
         }
 
+        #region Commands & properties
+        public DelegateCommand FirstButton_Clicked { get; }
         public override string Name => "Start";
 
         private bool _loginInProgress = false;
@@ -28,25 +33,24 @@ namespace Anderson.ViewModels
             set
             {
                 _loginInProgress = value;
-                FirstButtonClicked.RaiseCanExecuteChanged();
+                FirstButton_Clicked.RaiseCanExecuteChanged();
             }
         }
+        #endregion
 
-        public LoginModel LoginBack { get; set; }
-        public DelegateCommand FirstButtonClicked { get; }
-
+        #region Methods
         public void SwitchViewModels()
         {
 
-            if (LoginBack.RequiresLogin())
+            if (_loginBack.RequiresLogin())
             {
                 SendViewChange("Login");
                 return;
             }
             else
             {
-                LoginBack.OnLoginAttempt += LoginFinished;
-                Action login = LoginBack.LoginWithToken;
+                _loginBack.LoginAttempted += LoginFinished;
+                Action login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
                 login.BeginInvoke(null, null);
                 ErrorMessage = "You are logged in. Connecting...";
@@ -63,8 +67,10 @@ namespace Anderson.ViewModels
             }
             else
             {
+                _loginBack.LoginAttempted -= LoginFinished;
                 SendViewChange("User");
             }
         }
+        #endregion
     }
 }

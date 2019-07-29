@@ -12,48 +12,49 @@ namespace Anderson.Models
 {
     class ModelFactory
     {
-        MatrixClient _client;
-        Exception _exception;
-        string _url;
+        static MatrixClient _client;
+        static Exception _exception;
+        public static string Url { get; private set; }
 
-        public ModelFactory(string url = "https://matrix.org")
+        public static MatrixClient GetApiClient()
         {
-            _url = url;
+            return _client ?? throw _exception;
         }
 
-        public  MatrixClient GetApiClient()
-        {
-            if (_client == null)
-            {
-                Action gen = EstablishConnection;
-                var res = gen.BeginInvoke(null, null);
-                gen.EndInvoke(res);
-            }
-
-            return _client;
-        }
-
-        public void EstablishConnection()
+        public static void EstablishConnection(string url)
         {
             try
             {
-                _client = new MatrixClient(_url);
+                _client = new MatrixClient(url);
+                Url = url;
                 _exception = null;
             }
             catch (MatrixException e)
             {
                 _exception = e;
+                throw e;
             }
         }
 
-        public LoginModel GetLoginModel()
+        public static void DisposeApiClient()
+        {
+            _client?.Dispose();
+            _client = null;
+        }
+
+        public static LoginModel GetLoginModel()
         {
             return new LoginModel(_client);
         }
 
-        public PersonModel GetUserModel()
+        public static PersonModel GetUserModel()
         {
-            return new PersonModel();
+            return new PersonModel(_client);
+        }
+
+        public static RoomModel GetRoomModel()
+        {
+            return new RoomModel(_client);
         }
     }
 }
