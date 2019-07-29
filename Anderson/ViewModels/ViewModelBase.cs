@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Anderson.ViewModels
 {
-    public delegate void ViewModelSwitchHandler(string target);
+    public delegate void ViewModelSwitchHandler(ViewModelID target);
+    public enum ViewModelID { Application, Login, Start, User }
+
     abstract class ViewModelBase : INotifyPropertyChanged
     {
-        public abstract string Name { get; }
+        public abstract ViewModelID ID { get; }
 
         private string _errorMessage;
         public virtual string ErrorMessage
@@ -34,9 +36,9 @@ namespace Anderson.ViewModels
             }
         }
 
-        protected void SendViewChange(string name)
+        protected void SendViewChange(ViewModelID type)
         {
-            ViewChanged?.BeginInvoke(name, null, null);
+            ViewChanged?.BeginInvoke(type, null, null);
         }
 
         public virtual void SwitchedToThis() { }

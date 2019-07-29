@@ -36,7 +36,7 @@ namespace Anderson.ViewModels
         public DelegateCommand Room_Selected { get; }
         public DelegateCommand Message_Sent { get; }
 
-        public override string Name => "User";
+        public override ViewModelID ID => ViewModelID.User;
 
         private List<string> _currentRoomText = new List<string>();
         public List<string> CurrentRoomText
@@ -119,7 +119,7 @@ namespace Anderson.ViewModels
             Action logout = _loginBack.Logout;
             var wait = logout.BeginInvoke(null, null);
             logout.EndInvoke(wait);
-            SendViewChange("Login");
+            SendViewChange(ViewModelID.Login);
         }
 
         private void OnNewMessage(MatrixEvent message)

@@ -11,7 +11,8 @@ namespace Anderson.ViewModels
 {
     class ApplicationViewModel : ViewModelBase, IDisposable
     {
-        List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
+        private List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
+        private bool _clientSyncRunning;
 
         public ApplicationViewModel()
         {
@@ -37,7 +38,7 @@ namespace Anderson.ViewModels
 
         public DelegateCommand OnClose { get; set; }
 
-        public override string Name => "Application";
+        public override ViewModelID ID => ViewModelID.Application;
 
         private string Url => "https://lunakv.modular.im";
 
@@ -56,16 +57,25 @@ namespace Anderson.ViewModels
             }
         }
 
-        private void ChangeViewModel(string vmName)
+        private void ChangeViewModel(ViewModelID vmName)
         {
-            ViewModelBase newVM = _pageViewModels.FirstOrDefault(vm => vm.Name == vmName);
+            ViewModelBase newVM = _pageViewModels.FirstOrDefault(vm => vm.ID == vmName);
             CurrentPageViewModel = newVM ?? throw new NotImplementedException($"No ViewModel with name {vmName} exists.");
+            if (newVM.ID == ViewModelID.Login)
+            {
+                _clientSyncRunning = false;
+            } 
+            else if (newVM.ID == ViewModelID.User)
+            {
+                _clientSyncRunning = true;
+            }
             newVM.SwitchedToThis();
         }
 
         public void Dispose()
         {
-            ModelFactory.DisposeApiClient();
+            if (_clientSyncRunning)
+                ModelFactory.DisposeApiClient();
         }
     }
 }

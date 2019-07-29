@@ -29,7 +29,7 @@ namespace Anderson.ViewModels
         #region Commands & properties
         public DelegateCommand<object> LoginButton_Clicked { get; }
 
-        public override string Name => "Login";
+        public override ViewModelID ID => ViewModelID.Login;
 
         private string _username;
         public string Username
@@ -66,7 +66,7 @@ namespace Anderson.ViewModels
             else
             {
                 ErrorMessage = "";
-                SendViewChange("User");
+                SendViewChange(ViewModelID.User);
             }
         }
 

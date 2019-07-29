@@ -24,7 +24,7 @@ namespace Anderson.ViewModels
 
         #region Commands & properties
         public DelegateCommand FirstButton_Clicked { get; }
-        public override string Name => "Start";
+        public override ViewModelID ID => ViewModelID.Start;
 
         private bool _loginInProgress = false;
         public bool LoginInProgress
@@ -44,7 +44,7 @@ namespace Anderson.ViewModels
 
             if (_loginBack.RequiresLogin())
             {
-                SendViewChange("Login");
+                SendViewChange(ViewModelID.Login);
                 return;
             }
             else
@@ -68,7 +68,7 @@ namespace Anderson.ViewModels
             else
             {
                 _loginBack.LoginAttempted -= LoginFinished;
-                SendViewChange("User");
+                SendViewChange(ViewModelID.User);
             }
         }
         #endregion
