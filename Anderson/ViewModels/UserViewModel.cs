@@ -62,10 +62,9 @@ namespace Anderson.ViewModels
             set
             {
                 _selectedRoom = value;
-                OnPropertyChanged(nameof(SelectedRoom));
                 _roomBack.CurrentRoom = SelectedRoom;
-                CurrentRoomView = _roomBack.GetRoomView(value);
-                CurrentUserList = _personBack.GetPersonList(SelectedRoom);
+                OnPropertyChanged(nameof(SelectedRoom));
+                LoadRoom(value);
             }
         }
 
@@ -127,6 +126,15 @@ namespace Anderson.ViewModels
             SendViewChange(ViewModelID.Login);
         }
 
+        private void LoadRoom(MatrixRoom room)
+        {
+            if (!_roomBack.IsReady(room)) return;
+
+            CurrentRoomView = _roomBack.GetRoomView(room);
+            Action users = () => { CurrentUserList = _personBack.GetPersonList(room); };
+            users.BeginInvoke(null, null);
+        }
+
         private void OnNewMessage(MatrixEvent message)
         {
             if (_roomBack.IsMessage(message))
@@ -140,7 +148,7 @@ namespace Anderson.ViewModels
             AllRooms = _roomBack.GetAllRooms();
             if (room == SelectedRoom)
             {
-                OnPropertyChanged(nameof(CurrentRoomView));
+                LoadRoom(room);
             }
         }
         #endregion
