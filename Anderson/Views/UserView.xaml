@@ -27,7 +27,7 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </StackPanel>
-                        
+
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -46,6 +46,8 @@
             </TextBox.InputBindings>
         </TextBox>
         <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="628,344,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
+        <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="341" Margin="692,45,0,0" VerticalAlignment="Top" Width="98"/>
+
     </Grid>
 
     <UserControl.CommandBindings>

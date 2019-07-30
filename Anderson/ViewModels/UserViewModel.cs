@@ -65,6 +65,7 @@ namespace Anderson.ViewModels
                 OnPropertyChanged(nameof(SelectedRoom));
                 _roomBack.CurrentRoom = SelectedRoom;
                 CurrentRoomView = _roomBack.GetRoomView(value);
+                CurrentUserList = _personBack.GetPersonList(SelectedRoom);
             }
         }
 
@@ -87,6 +88,17 @@ namespace Anderson.ViewModels
             {
                 _sendMessageText = value;
                 OnPropertyChanged(nameof(SendMessageText));
+            }
+        }
+
+        private IEnumerable<MatrixUser> _currentUserList;
+        public IEnumerable<MatrixUser> CurrentUserList
+        {
+            get { return _currentUserList; }
+            set
+            {
+                _currentUserList = value;
+                OnPropertyChanged(nameof(CurrentUserList));
             }
         }
         #endregion

@@ -52,6 +52,11 @@ namespace Anderson.Models
             }
         }
 
+        public void InviteToRoom(MatrixRoom room, string id)
+        {
+            room.InviteToRoom(id);
+        }
+
         public AndersonRoom GetRoomView(MatrixRoom room)
         {
             return _events.TryGetValue(room, out var res) ? res : null;
