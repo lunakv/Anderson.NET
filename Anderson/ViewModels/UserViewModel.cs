@@ -5,23 +5,19 @@ using Matrix.Structures;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 
 namespace Anderson.ViewModels
 {
     class UserViewModel : ViewModelBase
     {
-        PersonModel _personBack;
-        RoomModel _roomBack;
-        LoginModel _loginBack;
+        IPersonModel _personBack;
+        IRoomModel _roomBack;
+        ILoginModel _loginBack;
 
-        public UserViewModel(LoginModel loginBack, PersonModel personBack, RoomModel roomBack)
+        public UserViewModel(ILoginModel loginBack, IPersonModel personBack, IRoomModel roomBack)
         {
             _personBack = personBack;
             _roomBack = roomBack;
@@ -113,7 +109,7 @@ namespace Anderson.ViewModels
         {
             if (SelectedRoom == null) return;
 
-            Action<MatrixRoom, string> send = _roomBack.SendMessage;
+            Action<MatrixRoom, string> send = _roomBack.SendTextMessage;
             send.BeginInvoke(SelectedRoom, SendMessageText.Trim(), null, null);
             SendMessageText = "";
         }

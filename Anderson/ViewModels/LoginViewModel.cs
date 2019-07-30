@@ -1,21 +1,15 @@
 ﻿using Anderson.Models;
 using Prism.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace Anderson.ViewModels
 {
     class LoginViewModel : ViewModelBase
     {
-        private LoginModel _loginBack;
+        private ILoginModel _loginBack;
 
-        public LoginViewModel(LoginModel loginBack)
+        public LoginViewModel(ILoginModel loginBack)
         {
             _loginBack = loginBack;
 

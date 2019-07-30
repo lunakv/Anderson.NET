@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Matrix.Client;
 using Matrix;
-using Matrix.Backends;
-using Matrix.AppService;
 
 namespace Anderson.Models
 {

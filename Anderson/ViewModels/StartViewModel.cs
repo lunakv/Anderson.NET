@@ -1,19 +1,14 @@
 ﻿using Anderson.Models;
 using Prism.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Anderson.ViewModels
 {
     class StartViewModel : ViewModelBase
     {
-        LoginModel _loginBack;
+        ILoginModel _loginBack;
 
-        public StartViewModel(LoginModel loginBack)
+        public StartViewModel(ILoginModel loginBack)
         {
             _loginBack = loginBack;
             FirstButton_Clicked = new DelegateCommand(

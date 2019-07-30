@@ -3,17 +3,13 @@ using Matrix.Client;
 using Matrix.Structures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Anderson.Models
 {
     public delegate void NewMessageHandler(MatrixEvent message);
     public delegate void RoomReadyHandler(MatrixRoom room);
 
-    class RoomModel
+    class RoomModel : IRoomModel
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
@@ -67,11 +63,6 @@ namespace Anderson.Models
             return _readyRooms.Contains(room);
         }
 
-        public AndersonRoom GetMessages(MatrixRoom room)
-        {
-            return IsReady(room) ? _events[room] : null;
-        }
-
         private void FetchRoom(MatrixRoom room)
         {
             MatrixEvent[] msgs = room.FetchMessages().chunk;
@@ -100,7 +91,7 @@ namespace Anderson.Models
             }
         }
 
-        public void SendMessage(MatrixRoom room, string message)
+        public void SendTextMessage(MatrixRoom room, string message)
         {
             room.SendText(message);
         }

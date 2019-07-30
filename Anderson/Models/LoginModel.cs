@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Anderson.Models
 {
-    class LoginModel
+    class LoginModel : ILoginModel
     {
         MatrixClient _client;
         string[] _token;
@@ -80,13 +80,13 @@ namespace Anderson.Models
             LoginAttempted?.BeginInvoke(error, null, null);
         }
 
-        public void SaveToken(MatrixLoginResponse login)
+        private void SaveToken(MatrixLoginResponse login)
         {
             _token = new[] { login.access_token, login.user_id };
             File.WriteAllText(_tokenPath, $"{_token[0]}${_token[1]}");
         }
 
-        public void DeleteToken()
+        private void DeleteToken()
         {
             if (File.Exists(_tokenPath))
             {
