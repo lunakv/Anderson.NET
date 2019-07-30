@@ -1,9 +1,11 @@
-﻿using Matrix.Client;
+﻿using Anderson.Structures;
+using Matrix.Client;
 using Matrix.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Anderson.Models
@@ -13,7 +15,7 @@ namespace Anderson.Models
 
     class RoomModel
     {
-        Dictionary<MatrixRoom, List<MatrixEvent>> _events = new Dictionary<MatrixRoom, List<MatrixEvent>>();
+        Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
         MatrixClient _client;
 
@@ -39,7 +41,7 @@ namespace Anderson.Models
 
         private void FetchAllRooms()
         {
-            foreach(MatrixRoom room in GetAllRooms())
+            foreach(MatrixRoom room in _client.GetAllRooms())
             {
                 Action<MatrixRoom> fetch = FetchRoom;
                 fetch.BeginInvoke(
@@ -48,7 +50,11 @@ namespace Anderson.Models
                     null
                     );
             }
-            
+        }
+
+        public AndersonRoom GetRoomView(MatrixRoom room)
+        {
+            return _events.TryGetValue(room, out var res) ? res : null;
         }
 
         public bool IsReady(MatrixRoom room)
@@ -56,7 +62,7 @@ namespace Anderson.Models
             return _readyRooms.Contains(room);
         }
 
-        public IEnumerable<MatrixEvent> GetMessages(MatrixRoom room)
+        public AndersonRoom GetMessages(MatrixRoom room)
         {
             return IsReady(room) ? _events[room] : null;
         }
@@ -64,9 +70,15 @@ namespace Anderson.Models
         private void FetchRoom(MatrixRoom room)
         {
             MatrixEvent[] msgs = room.FetchMessages().chunk;
-            _events[room] = new List<MatrixEvent>();
-            _events[room].AddRange(msgs);
-            room.OnEvent += AddEvent;
+            _events[room] = new AndersonRoom(room);
+            for(int i = msgs.Length - 1; i >= 0; i--)
+            {
+                if (IsMessage(msgs[i]))
+                {
+                    _events[room].AddMessage(msgs[i]);
+                }
+            }
+            room.OnMessage += AddEvent;
         }
 
         public bool IsMessage(MatrixEvent evt)
@@ -76,7 +88,7 @@ namespace Anderson.Models
 
         private void AddEvent(MatrixRoom room, MatrixEvent evt)
         {
-            _events[room].Add(evt);
+            App.Current.Dispatcher.Invoke(() => _events[room].AddMessage(evt));
             if (room == CurrentRoom)
             {
                 NewMessage?.Invoke(evt);

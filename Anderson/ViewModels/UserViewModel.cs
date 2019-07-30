@@ -1,9 +1,11 @@
 ﻿using Anderson.Models;
+using Anderson.Structures;
 using Matrix.Client;
 using Matrix.Structures;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -26,28 +28,18 @@ namespace Anderson.ViewModels
             _loginBack = loginBack;
 
             LogoutButton_Clicked = new DelegateCommand(Logout);
-            Room_Selected = new DelegateCommand(LoadCurrentRoomMessages);
+            Room_Selected = new DelegateCommand(() => { });
             _roomBack.NewMessage += OnNewMessage;
             _roomBack.RoomReady += OnRoomReady;
             Message_Sent = new DelegateCommand(SendNewMessage);
         }
 
+        #region Commands & properties
         public DelegateCommand LogoutButton_Clicked { get; }
         public DelegateCommand Room_Selected { get; }
         public DelegateCommand Message_Sent { get; }
 
         public override ViewModelID ID => ViewModelID.User;
-
-        private List<string> _currentRoomText = new List<string>();
-        public List<string> CurrentRoomText
-        {
-            get { return _currentRoomText; }
-            set
-            {
-                _currentRoomText = value;
-                OnPropertyChanged(nameof(CurrentRoomText));
-            }
-        }
 
         private IEnumerable<MatrixRoom> _allRooms;
         public IEnumerable<MatrixRoom> AllRooms
@@ -60,15 +52,27 @@ namespace Anderson.ViewModels
             }
         }
 
-        private MatrixRoom _currentRoom;
-        public MatrixRoom CurrentRoom
+        private MatrixRoom _selectedRoom;
+        public MatrixRoom SelectedRoom
         {
-            get { return _currentRoom; }
+            get { return _selectedRoom; }
             set
             {
-                _currentRoom = value;
-                OnPropertyChanged(nameof(CurrentRoom));
-                LoadCurrentRoomMessages();
+                _selectedRoom = value;
+                OnPropertyChanged(nameof(SelectedRoom));
+                _roomBack.CurrentRoom = SelectedRoom;
+                CurrentRoomView = _roomBack.GetRoomView(value);
+            }
+        }
+
+        private AndersonRoom _currentRoomView;
+        public AndersonRoom CurrentRoomView
+        {
+            get { return _currentRoomView; }
+            set
+            {
+                _currentRoomView = value;
+                OnPropertyChanged(nameof(CurrentRoomView));
             }
         }
 
@@ -82,35 +86,19 @@ namespace Anderson.ViewModels
                 OnPropertyChanged(nameof(SendMessageText));
             }
         }
+        #endregion
 
+        #region Methods
         public override void SwitchedToThis()
         {
             AllRooms = _roomBack.GetAllRooms();
             _roomBack.Initialize();
         }
 
-        private void LoadCurrentRoomMessages()
-        {
-            CurrentRoomText.Clear();
-            _roomBack.CurrentRoom = CurrentRoom;
-            if (!_roomBack.IsReady(CurrentRoom)) return;
-
-            var msgs = _roomBack.GetMessages(CurrentRoom);
-            
-            var sb = new StringBuilder();
-            foreach(Matrix.Structures.MatrixEvent msg in msgs)
-            {
-                if (!_roomBack.IsMessage(msg)) continue;
-
-                CurrentRoomText.Add(msg.content.mxContent["body"].ToString());
-                OnPropertyChanged(nameof(CurrentRoomText));
-            }
-        }
-
         private void SendNewMessage()
         {
             Action<MatrixRoom, string> send = _roomBack.SendMessage;
-            send.BeginInvoke(CurrentRoom, SendMessageText, null, null);
+            send.BeginInvoke(SelectedRoom, SendMessageText.Trim(), null, null);
             SendMessageText = "";
         }
 
@@ -126,20 +114,19 @@ namespace Anderson.ViewModels
         {
             if (_roomBack.IsMessage(message))
             {
-                CurrentRoomText.Add(message.content.mxContent["body"].ToString());
-                OnPropertyChanged(nameof(CurrentRoomText));
+                OnPropertyChanged(nameof(CurrentRoomView));
             }
         }
 
         private void OnRoomReady(MatrixRoom room)
         {
-            if (room == CurrentRoom)
+            AllRooms = _roomBack.GetAllRooms();
+            if (room == SelectedRoom)
             {
-                LoadCurrentRoomMessages();
+                OnPropertyChanged(nameof(CurrentRoomView));
             }
         }
-        
-        
+        #endregion
     }
 
     public class ListToTextConverter : IValueConverter

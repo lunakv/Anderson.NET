@@ -8,22 +8,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <UserControl.Resources>
-        <vm:ListToTextConverter x:Key="conv" />
-    </UserControl.Resources>
-
     <Grid>
         <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="715,10,0,0" VerticalAlignment="Top" Width="75"/>
         <ScrollViewer HorizontalAlignment="Left" Height="278" Margin="192,45,0,0" VerticalAlignment="Top" Width="485">
-            <RichTextBox Margin="0,0">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding Path=CurrentRoomText, Converter={StaticResource conv}}"/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
+            <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=User}" />
+                            <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Path=Content}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </ScrollViewer>
-        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=CurrentRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="344" Margin="21,45,0,0" VerticalAlignment="Top" Width="100">
+        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="344" Margin="21,45,0,0" VerticalAlignment="Top" Width="100">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Path=HumanReadableName}" />
