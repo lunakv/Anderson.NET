@@ -24,5 +24,11 @@ namespace Anderson.Views
         {
             InitializeComponent();
         }
+
+        private void InsertNewline_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            InputBox.Text += Environment.NewLine;
+            InputBox.CaretIndex = InputBox.Text.Length;
+        }
     }
 }

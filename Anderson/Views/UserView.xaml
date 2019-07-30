@@ -8,6 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <RoutedCommand x:Key="InsertNewLine" />
+    </UserControl.Resources>
     <Grid>
         <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="715,10,0,0" VerticalAlignment="Top" Width="75"/>
         <ScrollViewer HorizontalAlignment="Left" Height="278" Margin="192,45,0,0" VerticalAlignment="Top" Width="485">
@@ -36,12 +39,17 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBox Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" HorizontalAlignment="Left" Height="42" Margin="192,344,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
+        <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="192,344,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
             <TextBox.InputBindings>
-                <KeyBinding Key="Return" Modifiers="Shift" Command="{Binding Path=Message_Sent}" />
+                <KeyBinding Key="Return" Command="{Binding Path=Message_Sent}" />
+                <KeyBinding Key="Return" Modifiers="Shift" Command="{StaticResource ResourceKey=InsertNewLine}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="628,344,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
     </Grid>
+
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{StaticResource ResourceKey=InsertNewLine}" Executed="InsertNewline_Executed" />
+    </UserControl.CommandBindings>
 
 </UserControl>

@@ -29,15 +29,18 @@ namespace Anderson.ViewModels
 
             LogoutButton_Clicked = new DelegateCommand(Logout);
             Room_Selected = new DelegateCommand(() => { });
+            Message_Sent = new DelegateCommand(SendNewMessage);
+            NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             _roomBack.NewMessage += OnNewMessage;
             _roomBack.RoomReady += OnRoomReady;
-            Message_Sent = new DelegateCommand(SendNewMessage);
+
         }
 
         #region Commands & properties
         public DelegateCommand LogoutButton_Clicked { get; }
         public DelegateCommand Room_Selected { get; }
         public DelegateCommand Message_Sent { get; }
+        public DelegateCommand NewLine_Added { get; }
 
         public override ViewModelID ID => ViewModelID.User;
 
@@ -97,6 +100,8 @@ namespace Anderson.ViewModels
 
         private void SendNewMessage()
         {
+            if (SelectedRoom == null) return;
+
             Action<MatrixRoom, string> send = _roomBack.SendMessage;
             send.BeginInvoke(SelectedRoom, SendMessageText.Trim(), null, null);
             SendMessageText = "";
