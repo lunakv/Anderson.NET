@@ -5,13 +5,14 @@ using Matrix.Structures;
 using Matrix;
 using System.Net;
 using System.IO.IsolatedStorage;
+using System.Collections.Generic;
 
 namespace Anderson.Models
 {
     class LoginModel : ILoginModel
     {
         MatrixClient _client;
-        string[] _token;
+        Dictionary<string, string> _tokens = new Dictionary<string, string>();
         string _tokenPath = "Tokens.dat";
 
         public event LoginHandler LoginAttempted;
@@ -21,7 +22,12 @@ namespace Anderson.Models
             _client = client;
 
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
-            _token = LoadToken(_tokenPath, isoStore);
+            LoadTokens(_tokenPath, isoStore, _tokens);
+        }
+
+        public bool RequiresLogin(string user)
+        {
+            return !_tokens.ContainsKey(user);
         }
 
         public void Login(string username, string password, bool saveToken = false)
@@ -59,22 +65,22 @@ namespace Anderson.Models
             _client = ModelFactory.GetApiClient();
         }
 
-        public bool RequiresLogin()
-        {
-            return _token == null;
-        }
-
-        public void LoginWithToken()
+        public void LoginWithToken(string user)
         {
             string error = null;
-            if (_token == null) throw new InvalidOperationException("No login token exists.");
-            _client.UseExistingToken(_token[1], _token[0]);
+            if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
+            _client.UseExistingToken(user, _tokens[user]);
             _client.StartSync();
 
             LoginAttempted?.BeginInvoke(error, null, null);
         }
 
-        private string[] LoadToken(string path, IsolatedStorageFile store)
+        public IEnumerable<string> GetSavedUsers()
+        {
+            return _tokens.Keys;
+        }
+
+        private void LoadTokens(string path, IsolatedStorageFile store, Dictionary<string,string> tokens)
         {
             if (store.FileExists(path))
             {
@@ -82,17 +88,20 @@ namespace Anderson.Models
                 {
                     using (var reader = new StreamReader(isoStream))
                     {
-                        return reader.ReadLine().Split('$');
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var values = line.Split('$');
+                            tokens[values[1]] = values[0];
+                        }
                     }
                 }
             }
-
-            return null;
         }
 
         private void SaveToken(MatrixLoginResponse login, string path, IsolatedStorageFile store)
         {
-            _token = new[] { login.access_token, login.user_id };
+            _tokens[login.user_id] = login.access_token;
             using (var isoStream = new IsolatedStorageFileStream(path, FileMode.Append, FileAccess.Write, store))
             {
                 using (var writer = new StreamWriter(isoStream))

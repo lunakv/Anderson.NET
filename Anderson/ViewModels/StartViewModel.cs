@@ -1,6 +1,7 @@
 ﻿using Anderson.Models;
 using Prism.Commands;
 using System;
+using System.Collections.Generic;
 
 namespace Anderson.ViewModels
 {
@@ -15,6 +16,7 @@ namespace Anderson.ViewModels
                 SwitchViewModels,
                 () => !LoginInProgress
                 );
+            SavedUsers = _loginBack.GetSavedUsers();
         }
 
         #region Commands & properties
@@ -31,13 +33,26 @@ namespace Anderson.ViewModels
                 FirstButton_Clicked.RaiseCanExecuteChanged();
             }
         }
+
+        private string _selectedUser;
+        public string SelectedUser
+        {
+            get { return _selectedUser; }
+            set
+            {
+                _selectedUser = value;
+                SwitchViewModels();
+            }
+        }
+
+        public IEnumerable<string> SavedUsers { get; set; }
         #endregion
 
         #region Methods
         public void SwitchViewModels()
         {
 
-            if (_loginBack.RequiresLogin())
+            if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser))
             {
                 SendViewChange(ViewModelID.Login);
                 return;
@@ -45,9 +60,9 @@ namespace Anderson.ViewModels
             else
             {
                 _loginBack.LoginAttempted += LoginFinished;
-                Action login = _loginBack.LoginWithToken;
+                Action<string> login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
-                login.BeginInvoke(null, null);
+                login.BeginInvoke(SelectedUser, null, null);
                 ErrorMessage = "You are logged in. Connecting...";
 
             }

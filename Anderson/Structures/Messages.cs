@@ -21,6 +21,8 @@ namespace Anderson.Structures
             Status = status;
             Content = content;
         }
+
+        public static readonly AndersonMessage Loading = new AndersonMessage(null, "Loading...", DateTime.Now, MessageStatus.Sent);
     }
 
     public class AndersonParagraph
@@ -67,5 +69,17 @@ namespace Anderson.Structures
                 _lastParagraph = newLast;
             }
         }
+
+        private AndersonRoom WithMessage(AndersonMessage msg)
+        {
+            var para = new AndersonParagraph(null);
+            para.Messages.Add(msg);
+            Paragraphs.Add(para);
+            _lastParagraph = para;
+            return this;
+        }
+
+        public static AndersonRoom LoadingRoom { get; } = Empty.WithMessage(AndersonMessage.Loading);
+
     }
 }

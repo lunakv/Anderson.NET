@@ -9,8 +9,9 @@ namespace Anderson.Models
     {
         void Login(string username, string password, bool saveToken);
         void Logout();
-        bool RequiresLogin();
-        void LoginWithToken();
+        bool RequiresLogin(string user);
+        IEnumerable<string> GetSavedUsers();
+        void LoginWithToken(string user);
 
         event LoginHandler LoginAttempted;
     }

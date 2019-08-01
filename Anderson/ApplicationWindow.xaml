@@ -19,7 +19,7 @@
             <v:StartView />
         </DataTemplate>
     </Window.Resources>
-    <Grid>
+    <Grid Height="430" Width="790">
         <ContentControl Content="{Binding CurrentPageViewModel}" />
     </Grid>
 </Window>

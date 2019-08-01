@@ -124,7 +124,11 @@ namespace Anderson.ViewModels
 
         private void LoadRoom(MatrixRoom room)
         {
-            if (!_roomBack.IsReady(room)) return;
+            if (!_roomBack.IsReady(room))
+            {
+                CurrentRoomView = AndersonRoom.LoadingRoom;
+                return;
+            }
 
             CurrentRoomView = _roomBack.GetRoomView(room);
             Action users = () => { CurrentUserList = _personBack.GetPersonList(room); };
