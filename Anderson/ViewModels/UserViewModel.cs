@@ -27,7 +27,6 @@ namespace Anderson.ViewModels
             Room_Selected = new DelegateCommand(() => { });
             Message_Sent = new DelegateCommand(SendNewMessage);
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
-            _roomBack.NewMessage += OnNewMessage;
             _roomBack.RoomReady += OnRoomReady;
 
         }
@@ -58,7 +57,6 @@ namespace Anderson.ViewModels
             set
             {
                 _selectedRoom = value;
-                _roomBack.CurrentRoom = SelectedRoom;
                 OnPropertyChanged(nameof(SelectedRoom));
                 LoadRoom(value);
             }
@@ -135,11 +133,11 @@ namespace Anderson.ViewModels
             users.BeginInvoke(null, null);
         }
 
-        private void OnNewMessage(MatrixEvent message)
+        private void OnNewMessage(MatrixRoom room, MatrixEvent message)
         {
-            if (_roomBack.IsMessage(message))
+            if (room == SelectedRoom && _roomBack.IsMessage(message))
             {
-                OnPropertyChanged(nameof(CurrentRoomView));
+                //OnPropertyChanged(nameof(CurrentRoomView));
             }
         }
 

@@ -24,10 +24,7 @@ namespace Anderson.Models
 
     public interface IRoomModel
     {
-        event NewMessageHandler NewMessage;
         event RoomReadyHandler RoomReady;
-
-        MatrixRoom CurrentRoom { get; set; }
 
         IEnumerable<MatrixRoom> GetAllRooms();
         void Initialize();

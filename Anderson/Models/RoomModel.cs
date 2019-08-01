@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace Anderson.Models
 {
-    public delegate void NewMessageHandler(MatrixEvent message);
     public delegate void RoomReadyHandler(MatrixRoom room);
 
     class RoomModel : IRoomModel
@@ -14,9 +13,6 @@ namespace Anderson.Models
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
 
-        public MatrixRoom CurrentRoom { get; set; }
-
-        public event NewMessageHandler NewMessage;
         public event RoomReadyHandler RoomReady;
 
         public IEnumerable<MatrixRoom> GetAllRooms()
@@ -79,10 +75,6 @@ namespace Anderson.Models
         private void AddEvent(MatrixRoom room, MatrixEvent evt)
         {
             App.Current.Dispatcher.Invoke(() => _events[room].AddMessage(evt));
-            if (room == CurrentRoom)
-            {
-                NewMessage?.Invoke(evt);
-            }
         }
 
         public void SendTextMessage(MatrixRoom room, string message)
