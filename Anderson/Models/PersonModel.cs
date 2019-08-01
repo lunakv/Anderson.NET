@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Data;
 
 namespace Anderson.Models
 {
     class PersonModel
     {
+        
         public static IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
         {
             return room.Members.Keys.Select(x => GetPerson(x));

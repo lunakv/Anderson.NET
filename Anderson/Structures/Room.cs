@@ -12,8 +12,9 @@ namespace Anderson.Structures
 {
     public class AndersonRoom
     {
-        public static DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        public static AndersonRoom Empty = new AndersonRoom(null);
+        public static readonly DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        public static readonly AndersonRoom Empty = new AndersonRoom(null);
+        static readonly TimeSpan InactiveDelay = new TimeSpan(0, 10, 0);
 
         public AndersonRoom(MatrixRoom inner)
         {
@@ -24,26 +25,27 @@ namespace Anderson.Structures
         public MatrixRoom InnerRoom { get; }
         public ObservableCollection<AndersonParagraph> Paragraphs { get; } = new ObservableCollection<AndersonParagraph>();
         private AndersonParagraph _lastParagraph;
+        private AndersonMessage _lastMessage;
 
         public void AddTextMessage(MatrixEvent message)
         {
             string messageText = message.content.mxContent["body"].ToString();
-            DateTime date = EpochStart.AddMilliseconds(message.origin_server_ts);
-            MatrixUser sender = PersonModel.GetPerson(message.sender);
+            DateTime time = EpochStart.AddMilliseconds(message.origin_server_ts);
 
-            var aMsg = new AndersonMessage(sender, messageText, date, MessageStatus.Sent);
+            var aMsg = new AndersonMessage(message.sender, messageText, time, MessageStatus.Sent);
 
-            if (sender == _lastParagraph?.User)
+            if (message.sender == _lastMessage?.User && (time - _lastMessage.SentTime) < InactiveDelay)
             {
                 _lastParagraph.Messages.Add(aMsg);
             }
             else
             {
-                var newLast = new AndersonParagraph(sender);
+                var newLast = new AndersonParagraph(message.sender);
                 newLast.Messages.Add(aMsg);
                 Paragraphs.Add(newLast);
                 _lastParagraph = newLast;
             }
+            _lastMessage = aMsg;
         }
 
         private static AndersonRoom RoomWithMessage(AndersonMessage msg)

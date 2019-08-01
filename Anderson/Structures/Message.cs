@@ -1,4 +1,5 @@
-﻿using Matrix.Client;
+﻿using Anderson.Models;
+using Matrix.Client;
 using Matrix.Structures;
 using System;
 using System.Collections.ObjectModel;
@@ -7,14 +8,14 @@ namespace Anderson.Structures
 {
     public enum MessageStatus { Sending, Sent }
 
-    public struct AndersonMessage
+    public class AndersonMessage
     {
         public DateTime SentTime { get; }
-        public MatrixUser User { get; }
+        public string User { get; }
         public string Content { get; }
         public MessageStatus Status { get; }
 
-        public AndersonMessage(MatrixUser user, string content, DateTime sent, MessageStatus status)
+        public AndersonMessage(string user, string content, DateTime sent, MessageStatus status)
         {
             User = user;
             SentTime = sent;
@@ -33,9 +34,9 @@ namespace Anderson.Structures
         public MatrixUser User { get; }
         public ObservableCollection<AndersonMessage> Messages { get; } = new ObservableCollection<AndersonMessage>();
 
-        public AndersonParagraph(MatrixUser user)
+        public AndersonParagraph(string user)
         {
-            User = user;
+            User = user == null ? null : PersonModel.GetPerson(user);
         }
     }
 
