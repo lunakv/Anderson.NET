@@ -121,7 +121,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\ApiConnector.cs" />
     <Compile Include="Models\Interfaces.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\ModelFactory.cs" />

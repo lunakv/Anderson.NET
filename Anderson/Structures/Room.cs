@@ -46,8 +46,7 @@ namespace Anderson.Structures
         private static AndersonRoom RoomWithMessage(AndersonMessage msg)
         {
             var room = new AndersonRoom(null);
-            var para = new AndersonParagraph(null);
-            para.Messages.Add(msg);
+            var para = new InternalParagraph(msg.Content);
             room.Paragraphs.Add(para);
             room._lastParagraph = para;
             return room;

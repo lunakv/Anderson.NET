@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace Anderson.Models
 {
+    public delegate void LoginHandler(string error);
     class LoginModel : ILoginModel
     {
         MatrixClient _client;
