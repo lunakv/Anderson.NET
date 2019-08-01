@@ -119,7 +119,7 @@ namespace Anderson.ViewModels
             Action logout = _loginBack.Logout;
             var wait = logout.BeginInvoke(null, null);
             logout.EndInvoke(wait);
-            SendViewChange(ViewModelID.Login);
+            SendViewChange(ViewModelID.Start);
         }
 
         private void LoadRoom(MatrixRoom room)

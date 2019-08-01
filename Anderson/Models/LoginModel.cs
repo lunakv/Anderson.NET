@@ -12,16 +12,13 @@ namespace Anderson.Models
     public delegate void LoginHandler(string error);
     class LoginModel : ILoginModel
     {
-        MatrixClient _client;
         Dictionary<string, string> _tokens = new Dictionary<string, string>();
         string _tokenPath = "Tokens.dat";
 
         public event LoginHandler LoginAttempted;
 
-        public LoginModel(MatrixClient client)
+        public LoginModel()
         {
-            _client = client;
-
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
             LoadTokens(_tokenPath, isoStore, _tokens);
         }
@@ -37,9 +34,9 @@ namespace Anderson.Models
             try
             {
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
-                MatrixLoginResponse login = _client.LoginWithPassword(username, password);
+                MatrixLoginResponse login = ModelFactory.Api.LoginWithPassword(username, password);
                 if (saveToken) SaveToken(login, _tokenPath, isoStore);
-                _client.StartSync();
+                ModelFactory.Api.StartSync();
             }
             catch (MatrixException e)
             {
@@ -60,18 +57,15 @@ namespace Anderson.Models
 
         public void Logout()
         {
-            DeleteToken();
-            _client.Dispose();
-            ModelFactory.EstablishConnection(ModelFactory.Url);
-            _client = ModelFactory.GetApiClient();
+            ModelFactory.RestartApi();
         }
 
         public void LoginWithToken(string user)
         {
             string error = null;
             if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
-            _client.UseExistingToken(user, _tokens[user]);
-            _client.StartSync();
+            ModelFactory.Api.UseExistingToken(user, _tokens[user]);
+            ModelFactory.Api.StartSync();
 
             LoginAttempted?.BeginInvoke(error, null, null);
         }

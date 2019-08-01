@@ -13,12 +13,6 @@ namespace Anderson.Models
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
-        MatrixClient _client;
-
-        public RoomModel(MatrixClient client)
-        {
-            _client = client;
-        }
 
         public MatrixRoom CurrentRoom { get; set; }
 
@@ -27,7 +21,7 @@ namespace Anderson.Models
 
         public IEnumerable<MatrixRoom> GetAllRooms()
         {
-            return _client.GetAllRooms();
+            return ModelFactory.Api.GetAllRooms();
         }
 
         public void Initialize()
@@ -37,7 +31,7 @@ namespace Anderson.Models
 
         private void FetchAllRooms()
         {
-            foreach(MatrixRoom room in _client.GetAllRooms())
+            foreach(MatrixRoom room in ModelFactory.Api.GetAllRooms())
             {
                 Action<MatrixRoom> fetch = FetchRoom;
                 fetch.BeginInvoke(

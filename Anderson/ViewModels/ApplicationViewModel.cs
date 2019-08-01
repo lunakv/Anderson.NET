@@ -58,7 +58,7 @@ namespace Anderson.ViewModels
         {
             ViewModelBase newVM = _pageViewModels.FirstOrDefault(vm => vm.ID == vmName);
             CurrentPageViewModel = newVM ?? throw new NotImplementedException($"No ViewModel with name {vmName} exists.");
-            if (newVM.ID == ViewModelID.Login)
+            if (newVM.ID == ViewModelID.Login || newVM.ID == ViewModelID.Start)
             {
                 _clientSyncRunning = false;
             } 

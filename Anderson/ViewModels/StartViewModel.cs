@@ -49,6 +49,11 @@ namespace Anderson.ViewModels
         #endregion
 
         #region Methods
+        public override void SwitchedToThis()
+        {
+            _selectedUser = null;
+        }
+
         public void SwitchViewModels()
         {
 
