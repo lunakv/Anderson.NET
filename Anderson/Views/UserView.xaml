@@ -4,41 +4,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Anderson.Views"
-             xmlns:vm="clr-namespace:Anderson.ViewModels"
+             xmlns:mxc="clr-namespace:Matrix.Client;assembly=Matrix"
+             xmlns:stc="clr-namespace:Anderson.Structures"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
         <RoutedCommand x:Key="InsertNewLine" />
+        
+        <DataTemplate DataType="{x:Type mxc:MatrixRoom}">
+            <TextBlock Text="{Binding Path=HumanReadableName}" />
+        </DataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type stc:AndersonParagraph}">
+            <StackPanel>
+                <TextBlock Text="{Binding Path=User}" />
+                <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
+                </ListBox>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type stc:AndersonMessage}">
+            <TextBlock Text="{Binding Path=Content}" />
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="715,10,0,0" VerticalAlignment="Top" Width="75"/>
         <ScrollViewer HorizontalAlignment="Left" Height="278" Margin="192,45,0,0" VerticalAlignment="Top" Width="485">
-            <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=User}" />
-                            <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Path=Content}" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </StackPanel>
-
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" />
         </ScrollViewer>
-        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="344" Margin="21,45,0,0" VerticalAlignment="Top" Width="100">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Path=HumanReadableName}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="344" Margin="21,45,0,0" VerticalAlignment="Top" Width="100" />
         <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="192,344,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
             <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding Path=Message_Sent}" />
