@@ -1,41 +1,14 @@
 ﻿using Matrix.Client;
 using Matrix.Structures;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Anderson.Structures
 {
-    public enum MessageStatus { Sending, Sent }
-
-    public struct AndersonMessage
-    {
-        public DateTime SentTime { get; }
-        public string User { get; }
-        public string Content { get; }
-        public MessageStatus Status { get; }
-
-        public AndersonMessage(string user, string content, DateTime sent, MessageStatus status)
-        {
-            User = user;
-            SentTime = sent;
-            Status = status;
-            Content = content;
-        }
-
-        public static readonly AndersonMessage Loading = new AndersonMessage(null, "Loading...", DateTime.Now, MessageStatus.Sent);
-    }
-
-    public class AndersonParagraph
-    {
-        public string User { get; }
-        public ObservableCollection<AndersonMessage> Messages { get; } = new ObservableCollection<AndersonMessage>();
-
-        public AndersonParagraph(string user)
-        {
-            User = user;
-        }
-    }
-
     public class AndersonRoom
     {
         public static DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -70,16 +43,19 @@ namespace Anderson.Structures
             }
         }
 
-        private AndersonRoom WithMessage(AndersonMessage msg)
+        private static AndersonRoom RoomWithMessage(AndersonMessage msg)
         {
+            var room = new AndersonRoom(null);
             var para = new AndersonParagraph(null);
             para.Messages.Add(msg);
-            Paragraphs.Add(para);
-            _lastParagraph = para;
-            return this;
+            room.Paragraphs.Add(para);
+            room._lastParagraph = para;
+            return room;
         }
 
-        public static AndersonRoom LoadingRoom { get; } = Empty.WithMessage(AndersonMessage.Loading);
+        public static AndersonRoom LoadingRoom { get; } = RoomWithMessage(AndersonMessage.Loading);
+        public static AndersonRoom LogoutRoom { get; } = RoomWithMessage(AndersonMessage.Logout);
 
     }
+
 }
