@@ -10,11 +10,11 @@ namespace Anderson.Structures
     public struct AndersonMessage
     {
         public DateTime SentTime { get; }
-        public string User { get; }
+        public MatrixUser User { get; }
         public string Content { get; }
         public MessageStatus Status { get; }
 
-        public AndersonMessage(string user, string content, DateTime sent, MessageStatus status)
+        public AndersonMessage(MatrixUser user, string content, DateTime sent, MessageStatus status)
         {
             User = user;
             SentTime = sent;
@@ -30,10 +30,10 @@ namespace Anderson.Structures
 
     public class AndersonParagraph
     {
-        public string User { get; }
+        public MatrixUser User { get; }
         public ObservableCollection<AndersonMessage> Messages { get; } = new ObservableCollection<AndersonMessage>();
 
-        public AndersonParagraph(string user)
+        public AndersonParagraph(MatrixUser user)
         {
             User = user;
         }

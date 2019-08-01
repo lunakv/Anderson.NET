@@ -16,12 +16,6 @@ namespace Anderson.Models
         event LoginHandler LoginAttempted;
     }
 
-    public interface IPersonModel
-    {
-        IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
-        MatrixUser GetPerson(string id);
-    }
-
     public interface IRoomModel
     {
         event RoomReadyHandler RoomReady;

@@ -27,6 +27,10 @@
         <DataTemplate DataType="{x:Type stc:AndersonMessage}">
             <TextBlock Text="{Binding Path=Content}" />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type mxc:MatrixUser}">
+            <TextBlock Text="{Binding Path=DisplayName}" />
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="715,10,0,0" VerticalAlignment="Top" Width="75"/>

@@ -47,11 +47,6 @@ namespace Anderson.Models
             return new LoginModel();
         }
 
-        public static PersonModel GetUserModel()
-        {
-            return new PersonModel();
-        }
-
         public static RoomModel GetRoomModel()
         {
             return new RoomModel();

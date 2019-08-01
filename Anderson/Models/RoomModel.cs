@@ -59,9 +59,10 @@ namespace Anderson.Models
             _events[room] = new AndersonRoom(room);
             for(int i = msgs.Length - 1; i >= 0; i--)
             {
-                if (IsMessage(msgs[i]))
+                MatrixEvent message = msgs[i];
+                if (IsMessage(message))
                 {
-                    _events[room].AddMessage(msgs[i]);
+                    _events[room].AddTextMessage(message);
                 }
             }
             room.OnMessage += AddEvent;
@@ -74,7 +75,7 @@ namespace Anderson.Models
 
         private void AddEvent(MatrixRoom room, MatrixEvent evt)
         {
-            App.Current.Dispatcher.Invoke(() => _events[room].AddMessage(evt));
+            App.Current.Dispatcher.Invoke(() => _events[room].AddTextMessage(evt));
         }
 
         public void SendTextMessage(MatrixRoom room, string message)

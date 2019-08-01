@@ -1,4 +1,5 @@
-﻿using Matrix.Client;
+﻿using Anderson.Models;
+using Matrix.Client;
 using Matrix.Structures;
 using System;
 using System.Collections.Generic;
@@ -24,19 +25,21 @@ namespace Anderson.Structures
         public ObservableCollection<AndersonParagraph> Paragraphs { get; } = new ObservableCollection<AndersonParagraph>();
         private AndersonParagraph _lastParagraph;
 
-        public void AddMessage(MatrixEvent message)
+        public void AddTextMessage(MatrixEvent message)
         {
             string messageText = message.content.mxContent["body"].ToString();
             DateTime date = EpochStart.AddMilliseconds(message.origin_server_ts);
-            var aMsg = new AndersonMessage(message.sender, messageText, date, MessageStatus.Sent);
+            MatrixUser sender = PersonModel.GetPerson(message.sender);
 
-            if (message.sender == _lastParagraph?.User)
+            var aMsg = new AndersonMessage(sender, messageText, date, MessageStatus.Sent);
+
+            if (sender == _lastParagraph?.User)
             {
                 _lastParagraph.Messages.Add(aMsg);
             }
             else
             {
-                var newLast = new AndersonParagraph(message.sender);
+                var newLast = new AndersonParagraph(sender);
                 newLast.Messages.Add(aMsg);
                 Paragraphs.Add(newLast);
                 _lastParagraph = newLast;

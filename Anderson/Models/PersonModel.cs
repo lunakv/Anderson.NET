@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace Anderson.Models
 {
-    class PersonModel : IPersonModel
+    class PersonModel
     {
-        public IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
+        public static IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
         {
             return room.Members.Keys.Select(x => GetPerson(x));
         }
 
-        public MatrixUser GetPerson(string id)
+        public static MatrixUser GetPerson(string id)
         {
             MatrixUser res = null;
             Action get = () => { res = ModelFactory.Api.GetUser(id); };

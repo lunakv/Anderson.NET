@@ -13,13 +13,11 @@ namespace Anderson.ViewModels
 {
     class UserViewModel : ViewModelBase
     {
-        IPersonModel _personBack;
         IRoomModel _roomBack;
         ILoginModel _loginBack;
 
-        public UserViewModel(ILoginModel loginBack, IPersonModel personBack, IRoomModel roomBack)
+        public UserViewModel(ILoginModel loginBack, IRoomModel roomBack)
         {
-            _personBack = personBack;
             _roomBack = roomBack;
             _loginBack = loginBack;
 
@@ -129,7 +127,7 @@ namespace Anderson.ViewModels
             }
 
             CurrentRoomView = _roomBack.GetRoomView(room);
-            Action users = () => { CurrentUserList = _personBack.GetPersonList(room); };
+            Action users = () => { CurrentUserList = PersonModel.GetPersonList(room); };
             users.BeginInvoke(null, null);
         }
 

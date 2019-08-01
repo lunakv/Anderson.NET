@@ -18,11 +18,10 @@ namespace Anderson.ViewModels
             var wait = connect.BeginInvoke(Url, null, null);
             connect.EndInvoke(wait);
             LoginModel loginM = ModelFactory.GetLoginModel();
-            PersonModel personM = ModelFactory.GetUserModel();
             RoomModel roomM = ModelFactory.GetRoomModel();
             _pageViewModels.Add(new StartViewModel(loginM));
             _pageViewModels.Add(new LoginViewModel(loginM));
-            _pageViewModels.Add(new UserViewModel(loginM, personM, roomM));
+            _pageViewModels.Add(new UserViewModel(loginM, roomM));
 
             foreach(var vm in _pageViewModels)
             {
