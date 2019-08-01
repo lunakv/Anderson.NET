@@ -4,6 +4,7 @@ using System.IO;
 using Matrix.Structures;
 using Matrix;
 using System.Net;
+using System.IO.IsolatedStorage;
 
 namespace Anderson.Models
 {
@@ -11,7 +12,7 @@ namespace Anderson.Models
     {
         MatrixClient _client;
         string[] _token;
-        string _tokenPath;
+        string _tokenPath = "Tokens.dat";
 
         public event LoginHandler LoginAttempted;
 
@@ -19,16 +20,8 @@ namespace Anderson.Models
         {
             _client = client;
 
-            string tokenDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "lunakv", "Anderson");
-            if (!Directory.Exists(tokenDir))
-            {
-                Directory.CreateDirectory(tokenDir);
-            }
-            _tokenPath = Path.Combine(tokenDir, ".loginToken");
-            if (File.Exists(_tokenPath))
-            {
-                _token = File.ReadAllText(_tokenPath).Split('$');
-            }
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
+            _token = LoadToken(_tokenPath, isoStore);
         }
 
         public void Login(string username, string password)
@@ -36,8 +29,9 @@ namespace Anderson.Models
             string error = null;
             try
             {
+                IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
                 MatrixLoginResponse login = _client.LoginWithPassword(username, password);
-                SaveToken(login);
+                SaveToken(login, _tokenPath, isoStore);
                 _client.StartSync();
             }
             catch (MatrixException e)
@@ -80,10 +74,32 @@ namespace Anderson.Models
             LoginAttempted?.BeginInvoke(error, null, null);
         }
 
-        private void SaveToken(MatrixLoginResponse login)
+        private string[] LoadToken(string path, IsolatedStorageFile store)
+        {
+            if (store.FileExists(path))
+            {
+                using (var isoStream = new IsolatedStorageFileStream(path, FileMode.Open, FileAccess.Read, store))
+                {
+                    using (var reader = new StreamReader(isoStream))
+                    {
+                        return reader.ReadLine().Split('$');
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void SaveToken(MatrixLoginResponse login, string path, IsolatedStorageFile store)
         {
             _token = new[] { login.access_token, login.user_id };
-            File.WriteAllText(_tokenPath, $"{_token[0]}${_token[1]}");
+            using (var isoStream = new IsolatedStorageFileStream(path, FileMode.Append, FileAccess.Write, store))
+            {
+                using (var writer = new StreamWriter(isoStream))
+                {
+                    writer.WriteLine($"{login.access_token}${login.user_id}");
+                }
+            }
         }
 
         private void DeleteToken()

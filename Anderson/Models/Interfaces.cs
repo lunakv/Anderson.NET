@@ -11,6 +11,8 @@ namespace Anderson.Models
         void Logout();
         bool RequiresLogin();
         void LoginWithToken();
+
+        event LoginHandler LoginAttempted;
     }
 
     public interface IPersonModel
@@ -23,6 +25,9 @@ namespace Anderson.Models
     {
         event NewMessageHandler NewMessage;
         event RoomReadyHandler RoomReady;
+
+        MatrixRoom CurrentRoom { get; set; }
+
         IEnumerable<MatrixRoom> GetAllRooms();
         void Initialize();
         void InviteToRoom(MatrixRoom room, string id);
