@@ -7,7 +7,7 @@ namespace Anderson.Models
 {
     public interface ILoginModel
     {
-        void Login(string username, string password);
+        void Login(string username, string password, bool saveToken);
         void Logout();
         bool RequiresLogin();
         void LoginWithToken();

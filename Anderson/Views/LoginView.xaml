@@ -15,6 +15,7 @@
         </GroupBox>
         <Button Content="Login" Command="{Binding Path=LoginButton_Clicked}" CommandParameter="{Binding ElementName=PassBox}" HorizontalAlignment="Left" Margin="351,273,0,0" VerticalAlignment="Top" Width="75"/>
         <Label Content="{Binding Path=ErrorMessage}" HorizontalAlignment="Center" Margin="0,130" VerticalAlignment="Top" Foreground="#FFC52F2F"/>
+        <CheckBox Content="Save Login" IsChecked="{Binding Path=SaveToken, Mode=OneWayToSource}" HorizontalAlignment="Left" Margin="679,183,0,0" VerticalAlignment="Top"/>
     </Grid>
 
     <UserControl.InputBindings>

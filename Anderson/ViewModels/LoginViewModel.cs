@@ -46,6 +46,8 @@ namespace Anderson.ViewModels
                 LoginButton_Clicked.RaiseCanExecuteChanged();
             }
         }
+
+        public bool SaveToken { get; set; }
         #endregion
 
         #region Methods
@@ -68,10 +70,10 @@ namespace Anderson.ViewModels
         {
             _loginBack.LoginAttempted += LoginFinished;
             var pb = obj as PasswordBox;
-            Action<string,string> login = _loginBack.Login;
+            Action<string,string,bool> login = _loginBack.Login;
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
-            login.BeginInvoke(Username, pb.Password, null, null);
+            login.BeginInvoke(Username, pb.Password, SaveToken, null, null);
         }
         #endregion
     }

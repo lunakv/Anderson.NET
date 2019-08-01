@@ -24,14 +24,14 @@ namespace Anderson.Models
             _token = LoadToken(_tokenPath, isoStore);
         }
 
-        public void Login(string username, string password)
+        public void Login(string username, string password, bool saveToken = false)
         {
             string error = null;
             try
             {
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
                 MatrixLoginResponse login = _client.LoginWithPassword(username, password);
-                SaveToken(login, _tokenPath, isoStore);
+                if (saveToken) SaveToken(login, _tokenPath, isoStore);
                 _client.StartSync();
             }
             catch (MatrixException e)
@@ -104,10 +104,9 @@ namespace Anderson.Models
 
         private void DeleteToken()
         {
-            if (File.Exists(_tokenPath))
-            {
-                File.Delete(_tokenPath);
-            }
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
+            if (isoStore.FileExists(_tokenPath))
+                isoStore.DeleteFile(_tokenPath);
         }
 
     }
