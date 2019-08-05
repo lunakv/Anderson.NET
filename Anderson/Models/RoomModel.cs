@@ -43,7 +43,7 @@ namespace Anderson.Models
         /// </summary>
         public IEnumerable<MatrixRoom> GetAllRooms()
         {
-            return _cp.Api.GetAllRooms();
+            return _cp.Api?.GetAllRooms();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Anderson.Models
         /// </summary>
         private void FetchAllRooms()
         {
-            foreach(MatrixRoom room in _cp.Api.GetAllRooms())
+            foreach(MatrixRoom room in _cp.Api?.GetAllRooms())
             {
                 FetchRoomAsync(room);
             }
@@ -68,7 +68,7 @@ namespace Anderson.Models
         public MatrixRoom JoinRoom(string roomId)
         {
             MatrixRoom room = null;
-            Action join = () => room = _cp.Api.JoinRoom(roomId);
+            Action join = () => room = _cp.Api?.JoinRoom(roomId);
             var wait = join.BeginInvoke(null,null);
             join.EndInvoke(wait);
 

@@ -5,6 +5,7 @@ using Matrix;
 using System.Net;
 using System.IO.IsolatedStorage;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Anderson.Models
 {
@@ -112,11 +113,36 @@ namespace Anderson.Models
             }
         }
 
-        private void DeleteToken()
-        {
-            IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
-            if (isoStore.FileExists(_tokenPath))
-                isoStore.DeleteFile(_tokenPath);
+        public void DeleteToken(string userId)
+        {   
+            if (_tokens.Remove(userId))
+            {
+                IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
+                StringBuilder file = new StringBuilder();
+                using (var isoStream = new IsolatedStorageFileStream(_tokenPath, FileMode.Open, FileAccess.Read, isoStore))
+                {
+                    using (var reader = new StreamReader(isoStream))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            string user = line.Split('$')[1];
+                            if (user != userId)
+                            {
+                                file.Append(line);
+                            }
+                        }
+                    }
+                }
+
+                using (var isoStream = new IsolatedStorageFileStream(_tokenPath, FileMode.Open, FileAccess.Write, isoStore))
+                {
+                    using (var writer = new StreamWriter(isoStream))
+                    {
+                        writer.Write(file.ToString());
+                    }
+                }
+            }
         }
 
     }

@@ -13,6 +13,7 @@ namespace Anderson.Models
         bool RequiresLogin(string user);
         IEnumerable<string> GetSavedUsers();
         void LoginWithToken(string user);
+        void DeleteToken(string userId);
 
         event LoginHandler LoginAttempted;
     }
