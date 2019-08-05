@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="Anderson.Views.InviteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Anderson.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="90" d:DesignWidth="200">
+    <Grid>
+        <Button Content="Accept" Command="{Binding Path=Invite_Accepted}" HorizontalAlignment="Left" Margin="10,61,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Reject" Command="{Binding Path=Invite_Rejected}" HorizontalAlignment="Left" Margin="115,61,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="{Binding Path=Invite.Room}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="46" Width="180"/>
+    </Grid>
+</UserControl>

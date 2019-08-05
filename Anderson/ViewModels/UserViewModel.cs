@@ -1,13 +1,10 @@
 ﻿using Anderson.Models;
-using Anderson.Models;
+using Anderson.Structures;
 using Matrix.Client;
-using Matrix.Structures;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Windows.Data;
+using System.Collections.ObjectModel;
 
 namespace Anderson.ViewModels
 {
@@ -28,7 +25,10 @@ namespace Anderson.ViewModels
             Room_Selected = new DelegateCommand(() => { });
             Message_Sent = new DelegateCommand(SendNewMessage);
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
+            Invites = new ObservableCollection<InviteViewModel>();
+
             _roomBack.RoomReady += OnRoomReady;
+            _roomBack.NewInvite += OnNewInvite;
 
         }
 
@@ -39,6 +39,17 @@ namespace Anderson.ViewModels
         public DelegateCommand NewLine_Added { get; }
 
         public override ViewModelID ID => ViewModelID.User;
+
+        private MatrixUser _currentUser;
+        public MatrixUser CurrentUser
+        {
+            get { return _currentUser; }
+            private set
+            {
+                _currentUser = value;
+                OnPropertyChanged(nameof(CurrentUser));
+            }
+        }
 
         private IEnumerable<MatrixRoom> _allRooms;
         public IEnumerable<MatrixRoom> AllRooms
@@ -95,6 +106,8 @@ namespace Anderson.ViewModels
                 OnPropertyChanged(nameof(CurrentUserList));
             }
         }
+
+        public ObservableCollection<InviteViewModel> Invites { get; }
         #endregion
 
         #region Methods
@@ -102,6 +115,7 @@ namespace Anderson.ViewModels
         {
             AllRooms = _roomBack.GetAllRooms();
             _roomBack.Initialize();
+            CurrentUser = _roomBack.CurrentUser;
         }
 
         private void SendNewMessage()
@@ -111,6 +125,30 @@ namespace Anderson.ViewModels
             Action<MatrixRoom, string> send = _roomBack.SendTextMessage;
             send.BeginInvoke(SelectedRoom, SendMessageText.Trim(), null, null);
             SendMessageText = "";
+        }
+
+        private void ProcessInvite(InviteViewModel invite, bool accept)
+        {
+            RemoveInvite(invite);
+            if (accept)
+            {
+                _roomBack.JoinRoom(invite.Invite.Room);
+            }
+            else
+            {
+                _roomBack.RejectInvite(invite.Invite.Room);
+            }
+        }
+
+        private void RemoveInvite(InviteViewModel invite)
+        {
+            for(int i = 0; i < Invites.Count; i++)
+            {
+                if (Invites[i] == invite)
+                {
+                    Invites.RemoveAt(i);
+                }
+            }
         }
 
         private void Logout()
@@ -126,11 +164,12 @@ namespace Anderson.ViewModels
             if (!_roomBack.IsReady(room))
             {
                 CurrentRoomView = AndersonRoom.LoadingRoom;
+                CurrentUserList = null;
                 return;
             }
 
             CurrentRoomView = _roomBack.GetRoomView(room);
-            Action users = () => { CurrentUserList = PersonModel.GetPersonList(room); };
+            Action users = () => { CurrentUserList = _roomBack.GetPersonList(room); };
             users.BeginInvoke(null, null);
         }
 
@@ -141,6 +180,13 @@ namespace Anderson.ViewModels
             {
                 LoadRoom(room);
             }
+        }
+
+        private void OnNewInvite(AndersonInvite invite)
+        {
+            var inVM = new InviteViewModel(invite);
+            inVM.InviteProcessed += ProcessInvite;
+            App.Current.Dispatcher.Invoke(() => Invites.Add(inVM));
         }
         #endregion
     }

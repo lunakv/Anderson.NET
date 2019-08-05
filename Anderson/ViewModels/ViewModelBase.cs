@@ -3,7 +3,7 @@
 namespace Anderson.ViewModels
 {
     public delegate void ViewModelSwitchHandler(ViewModelID target);
-    public enum ViewModelID { Application, Login, Start, User }
+    public enum ViewModelID { Application, Login, Start, User, Invite }
 
 
     /// <summary>

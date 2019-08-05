@@ -1,4 +1,5 @@
-﻿using Matrix.Client;
+﻿using Anderson.Structures;
+using Matrix.Client;
 using Matrix.Structures;
 using System.Collections.Generic;
 
@@ -19,6 +20,8 @@ namespace Anderson.Models
     public interface IRoomModel
     {
         event RoomReadyHandler RoomReady;
+        event NewInviteHandler NewInvite;
+        MatrixUser CurrentUser { get; }
 
         IEnumerable<MatrixRoom> GetAllRooms();
         void Initialize();
@@ -27,5 +30,17 @@ namespace Anderson.Models
         bool IsReady(MatrixRoom room);
         bool IsMessage(MatrixEvent evt);
         void SendTextMessage(MatrixRoom room, string message);
+        IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
+        MatrixUser GetPerson(string id);
+
+        MatrixRoom JoinRoom(string roomid);
+
+        void RejectInvite(string roomid);
+    }
+
+    public interface IPersonModel
+    {
+        IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
+        MatrixUser GetPerson(string id);
     }
 }

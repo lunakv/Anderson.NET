@@ -4,19 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Anderson.Views"
+             xmlns:vm="clr-namespace:Anderson.ViewModels"
              xmlns:mxc="clr-namespace:Matrix.Client;assembly=Matrix"
-             xmlns:mod="clr-namespace:Anderson.Models"
+             xmlns:str="clr-namespace:Anderson.Structures"
              mc:Ignorable="d" 
              d:DesignHeight="572" d:DesignWidth="790">
 
     <UserControl.Resources>
         <RoutedCommand x:Key="InsertNewLine" />
+        <str:DateTimeToStringConverter x:Key="dateConv"/>
 
         <DataTemplate DataType="{x:Type mxc:MatrixRoom}">
             <TextBlock Text="{Binding Path=HumanReadableName}" />
         </DataTemplate>
 
-        <HierarchicalDataTemplate DataType="{x:Type mod:AndersonParagraph}">
+        <HierarchicalDataTemplate DataType="{x:Type str:AndersonParagraph}">
             <StackPanel>
                 <TextBlock Text="{Binding Path=User.DisplayName}" />
                 <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
@@ -24,12 +26,23 @@
             </StackPanel>
         </HierarchicalDataTemplate>
 
-        <DataTemplate DataType="{x:Type mod:AndersonMessage}">
-            <TextBlock Text="{Binding Path=Content}" />
+        <DataTemplate DataType="{x:Type str:AndersonMessage}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    <TextBlock.Text>
+                        <Binding Path="SentTime" Converter="{StaticResource dateConv}"/>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Text="{Binding Path=Content}"/>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type mxc:MatrixUser}">
             <TextBlock Text="{Binding Path=DisplayName}" />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:InviteViewModel}">
+            <local:InviteView/>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
@@ -46,6 +59,10 @@
         </TextBox>
         <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="599,514,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
         <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="511" Margin="677,45,0,0" VerticalAlignment="Top" Width="98"/>
+        <Label Content="{Binding Path=CurrentUser}" HorizontalAlignment="Left" Margin="21,12,0,0" VerticalAlignment="Top" Width="100"/>
+        <GroupBox Header="{Binding Path=Invites.Count}" HeaderStringFormat="Invites ({0})" HorizontalAlignment="Left" Height="40" Margin="163,0,0,0" VerticalAlignment="Top" Width="138">
+                <ComboBox ItemsSource="{Binding Invites}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128"/>
+        </GroupBox>
 
     </Grid>
 

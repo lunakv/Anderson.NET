@@ -1,12 +1,16 @@
-﻿using Anderson.Models;
-using Matrix.Client;
+﻿using Matrix.Client;
+using Anderson.Structures;
 using Matrix.Structures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace Anderson.Models
 {
     public delegate void RoomReadyHandler(MatrixRoom room);
+    public delegate void NewInviteHandler(AndersonInvite invite);
 
     /// <summary>
     /// A MatrixRoom managing backend class
@@ -15,15 +19,31 @@ namespace Anderson.Models
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
+        ClientProvider _cp;
+
+        public RoomModel(ClientProvider cp)
+        {
+            _cp = cp;
+            _cp.Api.OnInvite += OnInvite;
+            _cp.ClientRestarted += OnClientRestart;
+        }
+
+        private void OnClientRestart()
+        {
+            _cp.Api.OnInvite += OnInvite;
+        }
+
+        public MatrixUser CurrentUser => GetPerson(null);
 
         public event RoomReadyHandler RoomReady;
+        public event NewInviteHandler NewInvite;
 
         /// <summary>
         /// Get all the rooms the user has joined
         /// </summary>
         public IEnumerable<MatrixRoom> GetAllRooms()
         {
-            return ModelFactory.Api.GetAllRooms();
+            return _cp.Api.GetAllRooms();
         }
 
         /// <summary>
@@ -39,15 +59,37 @@ namespace Anderson.Models
         /// </summary>
         private void FetchAllRooms()
         {
-            foreach(MatrixRoom room in ModelFactory.Api.GetAllRooms())
+            foreach(MatrixRoom room in _cp.Api.GetAllRooms())
             {
-                Action<MatrixRoom> fetch = FetchRoom;
-                fetch.BeginInvoke(
-                    room,
-                    r => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
-                    null
-                    );
+                FetchRoomAsync(room);
             }
+        }
+
+        public MatrixRoom JoinRoom(string roomId)
+        {
+            MatrixRoom room = null;
+            Action join = () => room = _cp.Api.JoinRoom(roomId);
+            var wait = join.BeginInvoke(null,null);
+            join.EndInvoke(wait);
+
+            if (room == null)
+            {
+                throw new NotSupportedException($"Couldn't join room {roomId}");
+            }
+
+            FetchRoomSync(room);
+            return room;
+        }
+
+        public void RejectInvite(string roomId)
+        {
+            Action<string> reject = _cp.Api.RejectInvite;
+            reject.BeginInvoke(roomId, null, null);
+        }
+
+        public void OnInvite(string roomid, MatrixEventRoomInvited evt)
+        {
+            NewInvite?.Invoke(new AndersonInvite() { Room = roomid, Time = DateTime.Now }) ;
         }
 
         /// <summary>
@@ -74,6 +116,25 @@ namespace Anderson.Models
             return _readyRooms.Contains(room);
         }
 
+        private void FetchRoomAsync(MatrixRoom room)
+        {
+            Action<MatrixRoom> fetch = FetchRoom;
+            fetch.BeginInvoke(
+                room,
+                _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
+                null);
+        }
+
+        private void FetchRoomSync(MatrixRoom room)
+        {
+            Action<MatrixRoom> fetch = FetchRoom;
+            var wait = fetch.BeginInvoke(
+                room,
+                _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
+                null);
+            fetch.EndInvoke(wait);
+        }
+
         private void FetchRoom(MatrixRoom room)
         {
             MatrixEvent[] msgs = room.FetchMessages().chunk;
@@ -83,10 +144,24 @@ namespace Anderson.Models
                 MatrixEvent message = msgs[i];
                 if (IsMessage(message))
                 {
-                    _events[room].AddTextMessage(message);
+                    _events[room].AddTextMessage(GetPerson(message.sender), message);
                 }
             }
             room.OnMessage += AddEvent;
+        }
+
+        public IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
+        {
+            return room.Members.Keys.Select(x => GetPerson(x));
+        }
+
+        public MatrixUser GetPerson(string id)
+        {
+            MatrixUser res = null;
+            Action get = () => { res = _cp.Api?.GetUser(id); };
+            var wait = get.BeginInvoke(null, null);
+            get.EndInvoke(wait);
+            return res;
         }
 
         public bool IsMessage(MatrixEvent evt)
@@ -97,7 +172,7 @@ namespace Anderson.Models
         private void AddEvent(MatrixRoom room, MatrixEvent evt)
         {
             // _events[room] may be used by a ViewModel - update in UI thread
-            App.Current.Dispatcher.Invoke(() => _events[room].AddTextMessage(evt));
+            App.Current.Dispatcher.Invoke(() => _events[room].AddTextMessage(GetPerson(evt.sender), evt));
         }
 
         /// <summary>

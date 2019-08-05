@@ -123,19 +123,25 @@
     </ApplicationDefinition>
     <Compile Include="Models\Interfaces.cs" />
     <Compile Include="Models\LoginModel.cs" />
-    <Compile Include="Models\ModelFactory.cs" />
-    <Compile Include="Models\PersonModel.cs" />
+    <Compile Include="Models\ClientProvider.cs" />
     <Compile Include="Models\RoomModel.cs" />
     <Compile Include="ApplicationWindow.xaml.cs">
       <DependentUpon>ApplicationWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Models\Room.cs" />
+    <Compile Include="Structures\Invite.cs" />
+    <Compile Include="Structures\Message.cs" />
+    <Compile Include="Structures\Paragraph.cs" />
+    <Compile Include="Structures\Room.cs" />
+    <Compile Include="Structures\DateTimeToStringConverter.cs" />
+    <Compile Include="ViewModels\InviteViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="ViewModels\StartViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\InviteView.xaml.cs">
+      <DependentUpon>InviteView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -153,6 +159,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\InviteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

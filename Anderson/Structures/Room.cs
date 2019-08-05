@@ -1,14 +1,9 @@
-﻿using Anderson.Models;
-using Matrix.Client;
+﻿using Matrix.Client;
 using Matrix.Structures;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Anderson.Models
+namespace Anderson.Structures
 {
     public class AndersonRoom
     {
@@ -27,7 +22,7 @@ namespace Anderson.Models
         private AndersonParagraph _lastParagraph;
         private AndersonMessage _lastMessage;
 
-        public void AddTextMessage(MatrixEvent message)
+        public void AddTextMessage(MatrixUser sender, MatrixEvent message)
         {
             string messageText = message.content.mxContent["body"].ToString();
             DateTime time = EpochStart.AddMilliseconds(message.origin_server_ts);
@@ -40,7 +35,7 @@ namespace Anderson.Models
             }
             else
             {
-                var newLast = new AndersonParagraph(message.sender);
+                var newLast = new AndersonParagraph(sender);
                 newLast.Messages.Add(aMsg);
                 Paragraphs.Add(newLast);
                 _lastParagraph = newLast;

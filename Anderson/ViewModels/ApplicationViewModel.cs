@@ -1,5 +1,4 @@
 ﻿using Anderson.Models;
-using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +12,16 @@ namespace Anderson.ViewModels
     {
         private List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
         private bool _clientSyncRunning;        // are MatrixClient sync threads running?
+        private ClientProvider cp = new ClientProvider();
 
         public ApplicationViewModel()
         {
-            
-            Action<string> connect = ModelFactory.EstablishConnection;
+            Action<string> connect = cp.EstablishConnection;
             var wait = connect.BeginInvoke(Url, null, null);
             connect.EndInvoke(wait);
-            LoginModel loginM = ModelFactory.GetLoginModel();
-            RoomModel roomM = ModelFactory.GetRoomModel();
+            LoginModel loginM = new LoginModel(cp);
+            RoomModel roomM = new RoomModel(cp);
+
             _pageViewModels.Add(new StartViewModel(loginM));
             _pageViewModels.Add(new LoginViewModel(loginM));
             _pageViewModels.Add(new UserViewModel(loginM, roomM));
@@ -72,7 +72,7 @@ namespace Anderson.ViewModels
         {
             // disposing nonexistent sync threads raises an exception
             if (_clientSyncRunning)
-                ModelFactory.DisposeApiClient();
+                cp.DisposeApiClient();
         }
     }
 }
