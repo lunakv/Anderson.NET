@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Anderson.ViewModels
 {
+    /// <summary>
+    /// The first ViewModel displayed on startup
+    /// </summary>
     class StartViewModel : ViewModelBase
     {
         ILoginModel _loginBack;
@@ -12,7 +15,7 @@ namespace Anderson.ViewModels
         public StartViewModel(ILoginModel loginBack)
         {
             _loginBack = loginBack;
-            FirstButton_Clicked = new DelegateCommand(
+            NewLoginButton_Click = new DelegateCommand(
                 SwitchViewModels,
                 () => !LoginInProgress
                 );
@@ -20,7 +23,7 @@ namespace Anderson.ViewModels
         }
 
         #region Commands & properties
-        public DelegateCommand FirstButton_Clicked { get; }
+        public DelegateCommand NewLoginButton_Click { get; }
         public override ViewModelID ID => ViewModelID.Start;
 
         private bool _loginInProgress = false;
@@ -30,7 +33,7 @@ namespace Anderson.ViewModels
             set
             {
                 _loginInProgress = value;
-                FirstButton_Clicked.RaiseCanExecuteChanged();
+                NewLoginButton_Click.RaiseCanExecuteChanged();
             }
         }
 
@@ -54,6 +57,9 @@ namespace Anderson.ViewModels
             _selectedUser = null;
         }
 
+        /// <summary>
+        /// Changes ViewModels depending on which login method was selected
+        /// </summary>
         public void SwitchViewModels()
         {
 
@@ -64,7 +70,7 @@ namespace Anderson.ViewModels
             }
             else
             {
-                _loginBack.LoginAttempted += LoginFinished;
+                _loginBack.LoginAttempted += OnLoginFinished;
                 Action<string> login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
                 login.BeginInvoke(SelectedUser, null, null);
@@ -73,7 +79,7 @@ namespace Anderson.ViewModels
             }
         }
 
-        private void LoginFinished(string error)
+        private void OnLoginFinished(string error)
         {
             if (!string.IsNullOrEmpty(error))
             {
@@ -82,7 +88,7 @@ namespace Anderson.ViewModels
             }
             else
             {
-                _loginBack.LoginAttempted -= LoginFinished;
+                _loginBack.LoginAttempted -= OnLoginFinished;
                 SendViewChange(ViewModelID.User);
             }
         }

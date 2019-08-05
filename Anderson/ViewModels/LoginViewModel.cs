@@ -5,6 +5,9 @@ using System.Windows.Controls;
 
 namespace Anderson.ViewModels
 {
+    /// <summary>
+    /// The new user login page
+    /// </summary>
     class LoginViewModel : ViewModelBase
     {
         private ILoginModel _loginBack;
@@ -13,15 +16,15 @@ namespace Anderson.ViewModels
         {
             _loginBack = loginBack;
 
-            LoginButton_Clicked = new DelegateCommand<object>(
-                OnLoginClick,
+            LoginButton_Click = new DelegateCommand<object>(
+                AttemptLogin,
                 o => !string.IsNullOrEmpty(Username) && !LoginInProgress
                 ) ;
 
         }
 
         #region Commands & properties
-        public DelegateCommand<object> LoginButton_Clicked { get; }
+        public DelegateCommand<object> LoginButton_Click { get; }
 
         public override ViewModelID ID => ViewModelID.Login;
 
@@ -32,7 +35,7 @@ namespace Anderson.ViewModels
             set
             {
                 _username = value;
-                LoginButton_Clicked.RaiseCanExecuteChanged();
+                LoginButton_Click.RaiseCanExecuteChanged();
             }
         }
 
@@ -43,7 +46,7 @@ namespace Anderson.ViewModels
             set
             {
                 _loginInProgress = value;
-                LoginButton_Clicked.RaiseCanExecuteChanged();
+                LoginButton_Click.RaiseCanExecuteChanged();
             }
         }
 
@@ -51,10 +54,21 @@ namespace Anderson.ViewModels
         #endregion
 
         #region Methods
-        private void LoginFinished(string error)
+        // PasswordBox is sent as object parameter, since it has no DependencyProperty to bind on
+        private void AttemptLogin(object obj)
+        {
+            _loginBack.LoginAttempted += OnLoginFinished;
+            var pb = obj as PasswordBox;
+            Action<string, string, bool> login = _loginBack.Login;
+            ErrorMessage = "Attempting to log in...";
+            LoginInProgress = true;
+            login.BeginInvoke(Username, pb.Password, SaveToken, null, null);
+        }
+
+        private void OnLoginFinished(string error)
         {
             LoginInProgress = false;
-            _loginBack.LoginAttempted -= LoginFinished;
+            _loginBack.LoginAttempted -= OnLoginFinished;
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
@@ -66,15 +80,7 @@ namespace Anderson.ViewModels
             }
         }
 
-        private void OnLoginClick(object obj)
-        {
-            _loginBack.LoginAttempted += LoginFinished;
-            var pb = obj as PasswordBox;
-            Action<string,string,bool> login = _loginBack.Login;
-            ErrorMessage = "Attempting to log in...";
-            LoginInProgress = true;
-            login.BeginInvoke(Username, pb.Password, SaveToken, null, null);
-        }
+ 
         #endregion
     }
 }

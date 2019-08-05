@@ -4,7 +4,7 @@ using Matrix.Structures;
 using System;
 using System.Collections.ObjectModel;
 
-namespace Anderson.Structures
+namespace Anderson.Models
 {
     public enum MessageStatus { Sending, Sent }
 

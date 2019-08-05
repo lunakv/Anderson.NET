@@ -10,8 +10,13 @@ using System.Collections.Generic;
 namespace Anderson.Models
 {
     public delegate void LoginHandler(string error);
+
+    /// <summary>
+    /// A login providing backend
+    /// </summary>
     class LoginModel : ILoginModel
     {
+        // Saved users and their login tokens
         Dictionary<string, string> _tokens = new Dictionary<string, string>();
         string _tokenPath = "Tokens.dat";
 

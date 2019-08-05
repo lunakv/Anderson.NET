@@ -1,5 +1,5 @@
 ﻿using Anderson.Models;
-using Anderson.Structures;
+using Anderson.Models;
 using Matrix.Client;
 using Matrix.Structures;
 using Prism.Commands;
@@ -11,6 +11,9 @@ using System.Windows.Data;
 
 namespace Anderson.ViewModels
 {
+    /// <summary>
+    /// The main ViewModel of the application. 
+    /// </summary>
     class UserViewModel : ViewModelBase
     {
         IRoomModel _roomBack;
@@ -131,14 +134,6 @@ namespace Anderson.ViewModels
             users.BeginInvoke(null, null);
         }
 
-        private void OnNewMessage(MatrixRoom room, MatrixEvent message)
-        {
-            if (room == SelectedRoom && _roomBack.IsMessage(message))
-            {
-                //OnPropertyChanged(nameof(CurrentRoomView));
-            }
-        }
-
         private void OnRoomReady(MatrixRoom room)
         {
             AllRooms = _roomBack.GetAllRooms();
@@ -148,24 +143,5 @@ namespace Anderson.ViewModels
             }
         }
         #endregion
-    }
-
-    public class ListToTextConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var sb = new StringBuilder();
-            foreach (string s in value as List<string>)
-            {
-                sb.AppendLine(s);
-            }
-
-            return sb.ToString();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

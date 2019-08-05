@@ -1,4 +1,4 @@
-﻿using Anderson.Structures;
+﻿using Anderson.Models;
 using Matrix.Client;
 using Matrix.Structures;
 using System;
@@ -8,6 +8,9 @@ namespace Anderson.Models
 {
     public delegate void RoomReadyHandler(MatrixRoom room);
 
+    /// <summary>
+    /// A MatrixRoom managing backend class
+    /// </summary>
     class RoomModel : IRoomModel
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
@@ -15,16 +18,25 @@ namespace Anderson.Models
 
         public event RoomReadyHandler RoomReady;
 
+        /// <summary>
+        /// Get all the rooms the user has joined
+        /// </summary>
         public IEnumerable<MatrixRoom> GetAllRooms()
         {
             return ModelFactory.Api.GetAllRooms();
         }
 
+        /// <summary>
+        /// Start initialization of all rooms. Must be run for proper function
+        /// </summary>
         public void Initialize()
         {
             FetchAllRooms();
         }
 
+        /// <summary>
+        /// Fetches events for every room and adds them to the dictionary
+        /// </summary>
         private void FetchAllRooms()
         {
             foreach(MatrixRoom room in ModelFactory.Api.GetAllRooms())
@@ -38,16 +50,25 @@ namespace Anderson.Models
             }
         }
 
+        /// <summary>
+        /// Invite a user to a room by userid
+        /// </summary>
         public void InviteToRoom(MatrixRoom room, string id)
         {
             room.InviteToRoom(id);
         }
 
+        /// <summary>
+        /// Get the Anderson view representation of a room
+        /// </summary>
         public AndersonRoom GetRoomView(MatrixRoom room)
         {
             return _events.TryGetValue(room, out var res) ? res : null;
         }
 
+        /// <summary>
+        /// Get the initialization status of a room
+        /// </summary>
         public bool IsReady(MatrixRoom room)
         {
             return _readyRooms.Contains(room);
@@ -75,12 +96,19 @@ namespace Anderson.Models
 
         private void AddEvent(MatrixRoom room, MatrixEvent evt)
         {
+            // _events[room] may be used by a ViewModel - update in UI thread
             App.Current.Dispatcher.Invoke(() => _events[room].AddTextMessage(evt));
         }
 
+        /// <summary>
+        /// Send a text message to an initialized room
+        /// </summary>
         public void SendTextMessage(MatrixRoom room, string message)
         {
-            room.SendText(message);
+            if (_events.ContainsKey(room))
+            {
+                room.SendText(message);
+            }    
         }
     }
 }

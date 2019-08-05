@@ -17,7 +17,7 @@ namespace Anderson.Models
         public static MatrixUser GetPerson(string id)
         {
             MatrixUser res = null;
-            Action get = () => { res = ModelFactory.Api.GetUser(id); };
+            Action get = () => { res = ModelFactory.Api?.GetUser(id); };
             var wait = get.BeginInvoke(null, null);
             get.EndInvoke(wait);
             return res;

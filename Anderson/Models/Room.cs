@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Anderson.Structures
+namespace Anderson.Models
 {
     public class AndersonRoom
     {

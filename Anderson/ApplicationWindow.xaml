@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:Anderson.ViewModels"
         xmlns:v="clr-namespace:Anderson.Views"
         mc:Ignorable="d"
-        Title="Anderson.NET" Height="450" Width="800" Closed="Window_Closed">
+        Title="Anderson.NET" Height="621" Width="800" Closed="Window_Closed"  >
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
             <v:LoginView />
@@ -18,8 +18,10 @@
         <DataTemplate DataType="{x:Type vm:StartViewModel}">
             <v:StartView />
         </DataTemplate>
+
     </Window.Resources>
-    <Grid Height="430" Width="790">
-        <ContentControl Content="{Binding CurrentPageViewModel}" />
+
+    <Grid>
+        <ContentControl Content="{Binding CurrentPageViewModel}" Margin="0,0" />
     </Grid>
 </Window>

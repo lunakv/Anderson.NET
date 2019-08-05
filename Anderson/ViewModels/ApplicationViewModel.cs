@@ -6,10 +6,13 @@ using System.Linq;
 
 namespace Anderson.ViewModels
 {
+    /// <summary>
+    /// The base ViewModel of the app, delegating between all the ViewModels as needed
+    /// </summary>
     class ApplicationViewModel : ViewModelBase, IDisposable
     {
         private List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
-        private bool _clientSyncRunning;
+        private bool _clientSyncRunning;        // are MatrixClient sync threads running?
 
         public ApplicationViewModel()
         {
@@ -29,10 +32,7 @@ namespace Anderson.ViewModels
             }
 
             CurrentPageViewModel = _pageViewModels[0];
-            OnClose = new DelegateCommand(ModelFactory.DisposeApiClient);
         }
-
-        public DelegateCommand OnClose { get; set; }
 
         public override ViewModelID ID => ViewModelID.Application;
 
@@ -70,6 +70,7 @@ namespace Anderson.ViewModels
 
         public void Dispose()
         {
+            // disposing nonexistent sync threads raises an exception
             if (_clientSyncRunning)
                 ModelFactory.DisposeApiClient();
         }

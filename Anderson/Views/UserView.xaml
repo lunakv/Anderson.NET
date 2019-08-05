@@ -5,18 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Anderson.Views"
              xmlns:mxc="clr-namespace:Matrix.Client;assembly=Matrix"
-             xmlns:stc="clr-namespace:Anderson.Structures"
+             xmlns:mod="clr-namespace:Anderson.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="430" d:DesignWidth="790">
+             d:DesignHeight="572" d:DesignWidth="790">
 
     <UserControl.Resources>
         <RoutedCommand x:Key="InsertNewLine" />
-        
+
         <DataTemplate DataType="{x:Type mxc:MatrixRoom}">
             <TextBlock Text="{Binding Path=HumanReadableName}" />
         </DataTemplate>
 
-        <HierarchicalDataTemplate DataType="{x:Type stc:AndersonParagraph}">
+        <HierarchicalDataTemplate DataType="{x:Type mod:AndersonParagraph}">
             <StackPanel>
                 <TextBlock Text="{Binding Path=User.DisplayName}" />
                 <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
@@ -24,7 +24,7 @@
             </StackPanel>
         </HierarchicalDataTemplate>
 
-        <DataTemplate DataType="{x:Type stc:AndersonMessage}">
+        <DataTemplate DataType="{x:Type mod:AndersonMessage}">
             <TextBlock Text="{Binding Path=Content}" />
         </DataTemplate>
 
@@ -34,18 +34,18 @@
     </UserControl.Resources>
     <Grid>
         <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="700,10,0,0" VerticalAlignment="Top" Width="75"/>
-        <ScrollViewer HorizontalAlignment="Left" Height="278" Margin="163,45,0,0" VerticalAlignment="Top" Width="485">
+        <ScrollViewer HorizontalAlignment="Left" Height="453" Margin="163,45,0,0" VerticalAlignment="Top" Width="485">
             <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" />
         </ScrollViewer>
-        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="344" Margin="21,45,0,0" VerticalAlignment="Top" Width="100" />
-        <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="163,344,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
+        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="511" Margin="21,45,0,0" VerticalAlignment="Top" Width="100" />
+        <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="163,514,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
             <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding Path=Message_Sent}" />
                 <KeyBinding Key="Return" Modifiers="Shift" Command="{StaticResource ResourceKey=InsertNewLine}" />
             </TextBox.InputBindings>
         </TextBox>
-        <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="599,344,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
-        <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="341" Margin="677,45,0,0" VerticalAlignment="Top" Width="98"/>
+        <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="599,514,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
+        <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="511" Margin="677,45,0,0" VerticalAlignment="Top" Width="98"/>
 
     </Grid>
 

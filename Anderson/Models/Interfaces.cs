@@ -1,8 +1,8 @@
-﻿using Anderson.Structures;
-using Matrix.Client;
+﻿using Matrix.Client;
 using Matrix.Structures;
 using System.Collections.Generic;
 
+// The interfaces of Models for unit testing
 namespace Anderson.Models
 {
     public interface ILoginModel
