@@ -16,9 +16,6 @@ namespace Anderson.ViewModels
 
         public ApplicationViewModel()
         {
-            Action<string> connect = cp.EstablishConnection;
-            var wait = connect.BeginInvoke(Url, null, null);
-            connect.EndInvoke(wait);
             LoginModel loginM = new LoginModel(cp);
             RoomModel roomM = new RoomModel(cp);
 
@@ -35,8 +32,6 @@ namespace Anderson.ViewModels
         }
 
         public override ViewModelID ID => ViewModelID.Application;
-
-        private string Url => "https://lunakv.modular.im";
 
         private ViewModelBase _currentPageViewModel;
         public ViewModelBase CurrentPageViewModel

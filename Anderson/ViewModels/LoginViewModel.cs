@@ -1,6 +1,7 @@
 ﻿using Anderson.Models;
 using Prism.Commands;
 using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Anderson.ViewModels
@@ -11,20 +12,24 @@ namespace Anderson.ViewModels
     class LoginViewModel : ViewModelBase
     {
         private ILoginModel _loginBack;
-
+        
         public LoginViewModel(ILoginModel loginBack)
         {
             _loginBack = loginBack;
 
             LoginButton_Click = new DelegateCommand<object>(
                 AttemptLogin,
-                o => !string.IsNullOrEmpty(Username) && !LoginInProgress
+                o => !string.IsNullOrEmpty(Username) && !LoginInProgress && ServerSet
                 ) ;
+            Server_Connect = new DelegateCommand(
+                AttemptConnection,
+                () => !string.IsNullOrEmpty(ServerUrl) && !ConnectInProgress && !ServerSet);
 
         }
 
         #region Commands & properties
         public DelegateCommand<object> LoginButton_Click { get; }
+        public DelegateCommand Server_Connect { get; }
 
         public override ViewModelID ID => ViewModelID.Login;
 
@@ -42,7 +47,7 @@ namespace Anderson.ViewModels
         private bool _loginInProgress = false;
         public bool LoginInProgress
         {
-            get => _loginInProgress;
+            get { return _loginInProgress; }
             set
             {
                 _loginInProgress = value;
@@ -50,7 +55,42 @@ namespace Anderson.ViewModels
             }
         }
 
+        private bool _connectInProgress = false;
+        public bool ConnectInProgress
+        {
+            get { return _connectInProgress; }
+            set
+            {
+                _connectInProgress = value;
+                Server_Connect.RaiseCanExecuteChanged();
+            }
+        }
+
         public bool SaveToken { get; set; }
+        public string[] ServerUrlPrefixes { get; set; } = new string[] { "https://", "http://" };
+        public int ServerUrlPrefixIndex { get; set; } = 0;
+        private string _serverUrl;
+        public string ServerUrl
+        {
+            get { return _serverUrl; }
+            set
+            {
+                _serverUrl = value;
+                Server_Connect.RaiseCanExecuteChanged();
+            }
+        }
+
+        private bool _serverSet;
+        public bool ServerSet
+        {
+            get { return _serverSet; }
+            set
+            {
+                _serverSet = value;
+                LoginButton_Click.RaiseCanExecuteChanged();
+                Server_Connect.RaiseCanExecuteChanged();
+            }
+        }
         #endregion
 
         #region Methods
@@ -63,6 +103,13 @@ namespace Anderson.ViewModels
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
             login.BeginInvoke(Username, pb.Password, SaveToken, null, null);
+        }
+
+        private void AttemptConnection()
+        {
+            string url = ServerUrlPrefixes[ServerUrlPrefixIndex] + ServerUrl;
+            _loginBack.ConnectToServer(url);
+            ServerSet = true;
         }
 
         private void OnLoginFinished(string error)

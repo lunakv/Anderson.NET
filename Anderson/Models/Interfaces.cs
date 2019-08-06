@@ -8,6 +8,7 @@ namespace Anderson.Models
 {
     public interface ILoginModel
     {
+        void ConnectToServer(string url);
         void Login(string username, string password, bool saveToken);
         void Logout();
         bool RequiresLogin(TokenKey user);

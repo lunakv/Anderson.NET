@@ -63,6 +63,13 @@ namespace Anderson.Models
             LoginAttempted?.BeginInvoke(error, null, null);
         }
 
+        public void ConnectToServer(string url)
+        {
+            Action<string> connect = _cp.EstablishConnection;
+            var wait = connect.BeginInvoke(url, null, null);
+            connect.EndInvoke(wait);
+        }
+
         public void Logout()
         {
             _cp.RestartApi();

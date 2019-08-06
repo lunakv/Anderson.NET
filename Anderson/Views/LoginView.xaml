@@ -17,6 +17,16 @@
         <Button Content="Login" Command="{Binding Path=LoginButton_Click}" CommandParameter="{Binding ElementName=PassBox}" HorizontalAlignment="Left" Margin="351,273,0,0" VerticalAlignment="Top" Width="75"/>
         <Label Content="{Binding Path=ErrorMessage}" HorizontalAlignment="Center" Margin="0,130" VerticalAlignment="Top" Foreground="#FFC52F2F"/>
         <CheckBox Content="Save Login" IsChecked="{Binding Path=SaveToken, Mode=OneWayToSource}" HorizontalAlignment="Left" Margin="349,301,0,0" VerticalAlignment="Top"/>
+        <GroupBox Header="Server" HorizontalAlignment="Left" Height="50" Margin="239,116,0,0" VerticalAlignment="Top" Width="308">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox SelectedIndex="{Binding Path=ServerUrlPrefixIndex}" ItemsSource="{Binding Path=ServerUrlPrefixes}" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="70" />
+                <TextBox Text="{Binding Path=ServerUrl, UpdateSourceTrigger=PropertyChanged}" Width="170" Margin="0,0,0,5"></TextBox>
+                <Button Content="Connect" Command="{Binding Path=Server_Connect}" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="55" Height="23"/>
+
+            </StackPanel>
+            
+            
+        </GroupBox>
     </Grid>
 
     <UserControl.InputBindings>
