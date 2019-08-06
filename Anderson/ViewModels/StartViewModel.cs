@@ -2,6 +2,7 @@
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Anderson.ViewModels
 {
@@ -19,7 +20,16 @@ namespace Anderson.ViewModels
                 SwitchViewModels,
                 () => !LoginInProgress
                 );
-            SavedUsers = _loginBack.GetSavedUsers();
+
+            SavedUsers = new ObservableCollection<TokenViewModel>();
+            foreach (string user in _loginBack.GetSavedUsers())
+            {
+                var tVM = new TokenViewModel(user, null);
+                tVM.TokenDeleted += RemoveToken;
+                SavedUsers.Add(tVM);
+
+
+            }
         }
 
         #region Commands & properties
@@ -37,8 +47,8 @@ namespace Anderson.ViewModels
             }
         }
 
-        private string _selectedUser;
-        public string SelectedUser
+        private TokenViewModel _selectedUser;
+        public TokenViewModel SelectedUser
         {
             get { return _selectedUser; }
             set
@@ -48,7 +58,7 @@ namespace Anderson.ViewModels
             }
         }
 
-        public IEnumerable<string> SavedUsers { get; set; }
+        public ObservableCollection<TokenViewModel> SavedUsers { get; set; }
         #endregion
 
         #region Methods
@@ -63,7 +73,7 @@ namespace Anderson.ViewModels
         public void SwitchViewModels()
         {
 
-            if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser))
+            if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser.UserId))
             {
                 SendViewChange(ViewModelID.Login);
                 return;
@@ -73,17 +83,23 @@ namespace Anderson.ViewModels
                 _loginBack.LoginAttempted += OnLoginFinished;
                 Action<string> login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
-                login.BeginInvoke(SelectedUser, null, null);
+                login.BeginInvoke(SelectedUser.UserId, null, null);
                 ErrorMessage = "You are logged in. Connecting...";
 
             }
         }
 
+        private void RemoveToken(TokenViewModel token)
+        {
+            SavedUsers.Remove(token);
+            _loginBack.DeleteToken(token.UserId);
+        }
+
         private void OnLoginFinished(string error)
         {
+            LoginInProgress = false;
             if (!string.IsNullOrEmpty(error))
             {
-                LoginInProgress = false;
                 ErrorMessage = error;
             }
             else

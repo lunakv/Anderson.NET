@@ -95,6 +95,8 @@ namespace Anderson.Models
                         {
                             var values = line.Split('$');
                             tokens[values[1]] = values[0];
+                            Console.WriteLine(line);
+                            Console.WriteLine($"User: {values[1]}, Token: {values[0]}");
                         }
                     }
                 }
@@ -135,7 +137,7 @@ namespace Anderson.Models
                     }
                 }
 
-                using (var isoStream = new IsolatedStorageFileStream(_tokenPath, FileMode.Open, FileAccess.Write, isoStore))
+                using (var isoStream = new IsolatedStorageFileStream(_tokenPath, FileMode.Create, FileAccess.Write, isoStore))
                 {
                     using (var writer = new StreamWriter(isoStream))
                     {

@@ -25,7 +25,7 @@ namespace Anderson.Models
         MatrixUser CurrentUser { get; }
 
         IEnumerable<MatrixRoom> GetAllRooms();
-        void Initialize();
+        void Initialize();    
         void InviteToRoom(MatrixRoom room, string id);
         AndersonRoom GetRoomView(MatrixRoom room);
         bool IsReady(MatrixRoom room);

@@ -4,9 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Anderson.Views"
+             xmlns:vm="clr-namespace:Anderson.ViewModels"
              mc:Ignorable="d" d:DesignWidth="790" Height="430">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type vm:TokenViewModel}">
+            <local:TokenView/>
+        </DataTemplate>
+    </UserControl.Resources>
+    
     <Grid>
         <Button Content="New User" Command="{Binding Path=NewLoginButton_Click}"  Height="47" Margin="353,303,331,80"/>
-        <ListBox ItemsSource="{Binding Path=SavedUsers}" SelectedItem="{Binding Path=SelectedUser, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="100" Margin="184,119,0,0" VerticalAlignment="Top" Width="447"/>
+        <ListBox x:Name="TokenBox" ItemsSource="{Binding Path=SavedUsers}" SelectedItem="{Binding Path=SelectedUser, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="100" Margin="184,119,0,0" VerticalAlignment="Top" Width="447"/>
     </Grid>
 </UserControl>
