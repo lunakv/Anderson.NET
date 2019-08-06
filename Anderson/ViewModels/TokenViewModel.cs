@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using Anderson.Structures;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,15 @@ namespace Anderson.ViewModels
     public delegate void TokenDeleteHandler(TokenViewModel token);
     public class TokenViewModel
     {
-        public TokenViewModel(string userId, string server)
+        public TokenViewModel(TokenKey token)
         {
-            UserId = userId;
-            Server = server;
+            Login = token;
 
             TokenDelete_Click = new DelegateCommand(() => TokenDeleted?.Invoke(this));
         }
 
         public event TokenDeleteHandler TokenDeleted;
-        public string UserId { get; }
-
-        public string Server { get; }
-
+        public TokenKey Login { get; }
         public DelegateCommand TokenDelete_Click { get; }
         
     }

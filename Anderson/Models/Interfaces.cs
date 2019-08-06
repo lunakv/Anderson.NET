@@ -10,10 +10,10 @@ namespace Anderson.Models
     {
         void Login(string username, string password, bool saveToken);
         void Logout();
-        bool RequiresLogin(string user);
-        IEnumerable<string> GetSavedUsers();
-        void LoginWithToken(string user);
-        void DeleteToken(string userId);
+        bool RequiresLogin(TokenKey user);
+        IEnumerable<TokenKey> GetSavedUsers();
+        void LoginWithToken(TokenKey user);
+        void DeleteToken(TokenKey userId);
 
         event LoginHandler LoginAttempted;
     }

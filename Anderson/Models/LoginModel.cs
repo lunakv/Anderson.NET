@@ -6,6 +6,7 @@ using System.Net;
 using System.IO.IsolatedStorage;
 using System.Collections.Generic;
 using System.Text;
+using Anderson.Structures;
 
 namespace Anderson.Models
 {
@@ -17,7 +18,7 @@ namespace Anderson.Models
     class LoginModel : ILoginModel
     {
         // Saved users and their login tokens
-        Dictionary<string, string> _tokens = new Dictionary<string, string>();
+        Dictionary<TokenKey, string> _tokens = new Dictionary<TokenKey, string>();
         string _tokenPath = "Tokens.dat";
         ClientProvider _cp;
 
@@ -30,7 +31,7 @@ namespace Anderson.Models
             LoadTokens(_tokenPath, isoStore, _tokens);
         }
 
-        public bool RequiresLogin(string user)
+        public bool RequiresLogin(TokenKey user)
         {
             return !_tokens.ContainsKey(user);
         }
@@ -67,22 +68,23 @@ namespace Anderson.Models
             _cp.RestartApi();
         }
 
-        public void LoginWithToken(string user)
+        public void LoginWithToken(TokenKey user)
         {
             string error = null;
             if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
-            _cp.Api.UseExistingToken(user, _tokens[user]);
+            if (user.Server != _cp.Url) throw new InvalidOperationException("This token cannot be used for this server.");
+            _cp.Api.UseExistingToken(user.UserId, _tokens[user]);
             _cp.Api.StartSync();
 
             LoginAttempted?.BeginInvoke(error, null, null);
         }
 
-        public IEnumerable<string> GetSavedUsers()
+        public IEnumerable<TokenKey> GetSavedUsers()
         {
             return _tokens.Keys;
         }
 
-        private void LoadTokens(string path, IsolatedStorageFile store, Dictionary<string,string> tokens)
+        private void LoadTokens(string path, IsolatedStorageFile store, Dictionary<TokenKey,string> tokens)
         {
             if (store.FileExists(path))
             {
@@ -93,8 +95,9 @@ namespace Anderson.Models
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            var values = line.Split('$');
-                            tokens[values[1]] = values[0];
+                            string[] values = line.Split('$');
+                            var tK = new TokenKey(values[1], values[2]);
+                            tokens[tK] = values[0];
                             Console.WriteLine(line);
                             Console.WriteLine($"User: {values[1]}, Token: {values[0]}");
                         }
@@ -105,19 +108,20 @@ namespace Anderson.Models
 
         private void SaveToken(MatrixLoginResponse login, string path, IsolatedStorageFile store)
         {
-            _tokens[login.user_id] = login.access_token;
+            var tokenKey = new TokenKey(login.user_id, _cp.Url);
+            _tokens[tokenKey] = login.access_token;
             using (var isoStream = new IsolatedStorageFileStream(path, FileMode.Append, FileAccess.Write, store))
             {
                 using (var writer = new StreamWriter(isoStream))
                 {
-                    writer.WriteLine($"{login.access_token}${login.user_id}");
+                    writer.WriteLine($"{login.access_token}${tokenKey.UserId}${tokenKey.Server}");
                 }
             }
         }
 
-        public void DeleteToken(string userId)
+        public void DeleteToken(TokenKey token)
         {   
-            if (_tokens.Remove(userId))
+            if (_tokens.Remove(token))
             {
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
                 StringBuilder file = new StringBuilder();
@@ -129,7 +133,7 @@ namespace Anderson.Models
                         while ((line = reader.ReadLine()) != null)
                         {
                             string user = line.Split('$')[1];
-                            if (user != userId)
+                            if (user != token.UserId)
                             {
                                 file.Append(line);
                             }

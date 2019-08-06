@@ -1,4 +1,5 @@
 ﻿using Anderson.Models;
+using Anderson.Structures;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace Anderson.ViewModels
                 );
 
             SavedUsers = new ObservableCollection<TokenViewModel>();
-            foreach (string user in _loginBack.GetSavedUsers())
+            foreach (TokenKey user in _loginBack.GetSavedUsers())
             {
-                var tVM = new TokenViewModel(user, null);
+                var tVM = new TokenViewModel(user);
                 tVM.TokenDeleted += RemoveToken;
                 SavedUsers.Add(tVM);
 
@@ -73,7 +74,7 @@ namespace Anderson.ViewModels
         public void SwitchViewModels()
         {
 
-            if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser.UserId))
+            if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser.Login))
             {
                 SendViewChange(ViewModelID.Login);
                 return;
@@ -81,9 +82,9 @@ namespace Anderson.ViewModels
             else
             {
                 _loginBack.LoginAttempted += OnLoginFinished;
-                Action<string> login = _loginBack.LoginWithToken;
+                Action<TokenKey> login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
-                login.BeginInvoke(SelectedUser.UserId, null, null);
+                login.BeginInvoke(SelectedUser.Login, null, null);
                 ErrorMessage = "You are logged in. Connecting...";
 
             }
@@ -92,7 +93,7 @@ namespace Anderson.ViewModels
         private void RemoveToken(TokenViewModel token)
         {
             SavedUsers.Remove(token);
-            _loginBack.DeleteToken(token.UserId);
+            _loginBack.DeleteToken(token.Login);
         }
 
         private void OnLoginFinished(string error)

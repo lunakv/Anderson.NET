@@ -133,6 +133,7 @@
     <Compile Include="Structures\Paragraph.cs" />
     <Compile Include="Structures\Room.cs" />
     <Compile Include="Structures\DateTimeToStringConverter.cs" />
+    <Compile Include="Structures\TokenKey.cs" />
     <Compile Include="ViewModels\InviteViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />

@@ -12,8 +12,8 @@
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Text="{Binding Path=UserId}"/>
-        <TextBlock Grid.Column="1" Text="{Binding Path=Server}"/>
+        <TextBlock Grid.Column="0" Text="{Binding Path=Login.UserId}"/>
+        <TextBlock Grid.Column="1" Text="{Binding Path=Login.Server}"/>
         <Button Grid.Column="2" Content="X" Command="{Binding Path=TokenDelete_Click}"/>
     </Grid>
 </UserControl>

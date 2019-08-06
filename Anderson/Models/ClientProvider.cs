@@ -6,7 +6,7 @@ namespace Anderson.Models
     class ClientProvider
     {
         public MatrixClient Api { get; private set; }
-        public static string Url { get; private set; }
+        public string Url { get; private set; }
 
         public event Action ClientRestarted;
 
