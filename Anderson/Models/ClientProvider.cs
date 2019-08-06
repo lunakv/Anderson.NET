@@ -8,19 +8,19 @@ namespace Anderson.Models
         public MatrixClient Api { get; private set; }
         public string Url { get; private set; }
 
-        public event Action ClientRestarted;
+        public event Action ClientStarted;
 
         public void EstablishConnection(string url)
         {
             Url = url;
             Api = new MatrixClient(url);
+            ClientStarted?.Invoke();
         }
 
         public void RestartApi()
         {
             Api.Dispose();
             EstablishConnection(Url);
-            ClientRestarted?.Invoke();
         }
 
         public void DisposeApiClient()

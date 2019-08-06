@@ -24,8 +24,7 @@ namespace Anderson.Models
         public RoomModel(ClientProvider cp)
         {
             _cp = cp;
-            _cp.Api.OnInvite += OnInvite;
-            _cp.ClientRestarted += OnClientRestart;
+            _cp.ClientStarted += OnClientRestart;
         }
 
         private void OnClientRestart()
