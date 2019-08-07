@@ -3,7 +3,7 @@ using System;
 
 namespace Anderson.Models
 {
-    class ClientProvider
+    public class ClientProvider
     {
         public MatrixClient Api { get; private set; }
         public string Url { get; private set; }

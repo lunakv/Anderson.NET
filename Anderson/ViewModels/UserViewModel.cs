@@ -11,7 +11,7 @@ namespace Anderson.ViewModels
     /// <summary>
     /// The main ViewModel of the application. 
     /// </summary>
-    class UserViewModel : ViewModelBase
+    public class UserViewModel : ViewModelBase
     {
         IRoomModel _roomBack;
         ILoginModel _loginBack;

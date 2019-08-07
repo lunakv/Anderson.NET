@@ -15,7 +15,7 @@ namespace Anderson.Models
     /// <summary>
     /// A login providing backend
     /// </summary>
-    class LoginModel : ILoginModel
+    public class LoginModel : ILoginModel
     {
         // Saved users and their login tokens
         Dictionary<TokenKey, string> _tokens = new Dictionary<TokenKey, string>();
@@ -42,9 +42,14 @@ namespace Anderson.Models
             try
             {
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
-                MatrixLoginResponse login = _cp.Api.LoginWithPassword(username, password);
-                if (saveToken) SaveToken(login, _tokenPath, isoStore);
-                _cp.Api.StartSync();
+                MatrixLoginResponse response = null;
+                Action login = () => response = _cp.Api.LoginWithPassword(username, password);
+                var wait = login.BeginInvoke(null, null);
+                login.EndInvoke(wait);
+                if (saveToken) SaveToken(response, _tokenPath, isoStore);
+                Action<string> sync =  _cp.Api.StartSync;
+                wait = sync.BeginInvoke("", null, null);
+                sync.EndInvoke(wait);
             }
             catch (MatrixException e)
             {
@@ -79,7 +84,8 @@ namespace Anderson.Models
         {
             string error = null;
             if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
-            if (user.Server != _cp.Url) throw new InvalidOperationException("This token cannot be used for this server.");
+            if (_cp.Url != user.Server) ConnectToServer(user.Server);
+
             _cp.Api.UseExistingToken(user.UserId, _tokens[user]);
             _cp.Api.StartSync();
 

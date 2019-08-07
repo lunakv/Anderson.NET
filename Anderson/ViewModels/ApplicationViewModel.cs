@@ -8,7 +8,7 @@ namespace Anderson.ViewModels
     /// <summary>
     /// The base ViewModel of the app, delegating between all the ViewModels as needed
     /// </summary>
-    class ApplicationViewModel : ViewModelBase, IDisposable
+    public class ApplicationViewModel : ViewModelBase, IDisposable
     {
         private List<ViewModelBase> _pageViewModels = new List<ViewModelBase>();
         private bool _clientSyncRunning;        // are MatrixClient sync threads running?

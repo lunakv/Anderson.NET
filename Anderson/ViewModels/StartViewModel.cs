@@ -10,7 +10,7 @@ namespace Anderson.ViewModels
     /// <summary>
     /// The first ViewModel displayed on startup
     /// </summary>
-    class StartViewModel : ViewModelBase
+    public class StartViewModel : ViewModelBase
     {
         ILoginModel _loginBack;
 
@@ -84,7 +84,7 @@ namespace Anderson.ViewModels
                 _loginBack.LoginAttempted += OnLoginFinished;
                 Action<TokenKey> login = _loginBack.LoginWithToken;
                 LoginInProgress = true;
-                login.BeginInvoke(SelectedUser.Login, null, null);
+                login.Invoke(SelectedUser.Login);
                 ErrorMessage = "You are logged in. Connecting...";
 
             }

@@ -15,7 +15,7 @@ namespace Anderson.Models
     /// <summary>
     /// A MatrixRoom managing backend class
     /// </summary>
-    class RoomModel : IRoomModel
+    public class RoomModel : IRoomModel
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();

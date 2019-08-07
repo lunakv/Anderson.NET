@@ -9,7 +9,7 @@ namespace Anderson.ViewModels
     /// <summary>
     /// The new user login page
     /// </summary>
-    class LoginViewModel : ViewModelBase
+    public class LoginViewModel : ViewModelBase
     {
         private ILoginModel _loginBack;
         
@@ -98,11 +98,10 @@ namespace Anderson.ViewModels
         private void AttemptLogin(object obj)
         {
             _loginBack.LoginAttempted += OnLoginFinished;
-            var pb = obj as PasswordBox;
             Action<string, string, bool> login = _loginBack.Login;
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
-            login.BeginInvoke(Username, pb.Password, SaveToken, null, null);
+            login.Invoke(Username, ((PasswordBox)obj).Password, SaveToken);
         }
 
         private void AttemptConnection()

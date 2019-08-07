@@ -9,7 +9,7 @@ namespace Anderson.ViewModels
     /// <summary>
     /// Base abstract class for all ViewModels
     /// </summary>
-    abstract class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
         /// <summary>
         /// Unique identifier set for each ViewModel
@@ -45,7 +45,7 @@ namespace Anderson.ViewModels
         public event ViewModelSwitchHandler ViewChanged;
         protected void SendViewChange(ViewModelID type)
         {
-            ViewChanged?.BeginInvoke(type, null, null);
+            ViewChanged?.Invoke(type);
         }
 
         public virtual void SwitchedToThis() { }

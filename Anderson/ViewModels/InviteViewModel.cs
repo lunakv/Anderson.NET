@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Anderson.ViewModels
 {
-    delegate void InviteActionHandler(InviteViewModel invite, bool accepted);
+    public delegate void InviteActionHandler(InviteViewModel invite, bool accepted);
 
-    class InviteViewModel : ViewModelBase
+    public class InviteViewModel : ViewModelBase
     {
         public InviteViewModel(AndersonInvite invite)
         {
