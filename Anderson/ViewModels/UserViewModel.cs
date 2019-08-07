@@ -23,7 +23,7 @@ namespace Anderson.ViewModels
 
             LogoutButton_Clicked = new DelegateCommand(Logout);
             Room_Selected = new DelegateCommand(() => { });
-            Message_Sent = new DelegateCommand(SendNewMessage);
+            Message_Sent = new DelegateCommand(SendNewMessage, () => !string.IsNullOrWhiteSpace(SendMessageText));
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             Invites = new ObservableCollection<InviteViewModel>();
 
@@ -93,6 +93,7 @@ namespace Anderson.ViewModels
             {
                 _sendMessageText = value;
                 OnPropertyChanged(nameof(SendMessageText));
+                Message_Sent.RaiseCanExecuteChanged();
             }
         }
 
@@ -123,7 +124,7 @@ namespace Anderson.ViewModels
             if (SelectedRoom == null) return;
 
             Action<MatrixRoom, string> send = _roomBack.SendTextMessage;
-            send.BeginInvoke(SelectedRoom, SendMessageText.Trim(), null, null);
+            send.BeginInvoke(SelectedRoom, SendMessageText.TrimEnd(), null, null);
             SendMessageText = "";
         }
 

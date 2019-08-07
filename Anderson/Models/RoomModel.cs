@@ -77,6 +77,7 @@ namespace Anderson.Models
             }
 
             FetchRoomSync(room);
+            RoomReady?.Invoke(room);
             return room;
         }
 
@@ -96,7 +97,9 @@ namespace Anderson.Models
         /// </summary>
         public void InviteToRoom(MatrixRoom room, string id)
         {
-            room.InviteToRoom(id);
+            Action<string> invite = room.InviteToRoom;
+            var wait = invite.BeginInvoke(id, null, null);
+            invite.EndInvoke(wait);
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace Anderson.Models
 
         private void FetchRoomAsync(MatrixRoom room)
         {
-            Action<MatrixRoom> fetch = FetchRoom;
+            Action<MatrixRoom> fetch = FetchRoomInternal;
             fetch.BeginInvoke(
                 room,
                 _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
@@ -126,7 +129,7 @@ namespace Anderson.Models
 
         private void FetchRoomSync(MatrixRoom room)
         {
-            Action<MatrixRoom> fetch = FetchRoom;
+            Action<MatrixRoom> fetch = FetchRoomInternal;
             var wait = fetch.BeginInvoke(
                 room,
                 _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
@@ -134,7 +137,7 @@ namespace Anderson.Models
             fetch.EndInvoke(wait);
         }
 
-        private void FetchRoom(MatrixRoom room)
+        private void FetchRoomInternal(MatrixRoom room)
         {
             MatrixEvent[] msgs = room.FetchMessages().chunk;
             _events[room] = new AndersonRoom(room);
@@ -181,7 +184,8 @@ namespace Anderson.Models
         {
             if (_events.ContainsKey(room))
             {
-                room.SendText(message);
+                Func<string,string> send = room.SendText;
+                var wait = send.BeginInvoke(message, null, null);
             }    
         }
     }

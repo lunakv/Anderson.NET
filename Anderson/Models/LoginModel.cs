@@ -46,6 +46,7 @@ namespace Anderson.Models
                 Action login = () => response = _cp.Api.LoginWithPassword(username, password);
                 var wait = login.BeginInvoke(null, null);
                 login.EndInvoke(wait);
+
                 if (saveToken) SaveToken(response, _tokenPath, isoStore);
                 Action<string> sync =  _cp.Api.StartSync;
                 wait = sync.BeginInvoke("", null, null);
@@ -77,7 +78,9 @@ namespace Anderson.Models
 
         public void Logout()
         {
-            _cp.RestartApi();
+            Action logout =_cp.RestartApi;
+            var wait = logout.BeginInvoke(null, null);
+            logout.EndInvoke(wait);
         }
 
         public void LoginWithToken(TokenKey user)
@@ -86,8 +89,12 @@ namespace Anderson.Models
             if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
             if (_cp.Url != user.Server) ConnectToServer(user.Server);
 
-            _cp.Api.UseExistingToken(user.UserId, _tokens[user]);
-            _cp.Api.StartSync();
+            Action<string, string> use = _cp.Api.UseExistingToken;
+            var wait = use.BeginInvoke(user.UserId, _tokens[user], null, null);
+            use.EndInvoke(wait);
+            Action<string> sync = _cp.Api.StartSync;
+            wait = sync.BeginInvoke("", null, null);
+            sync.EndInvoke(wait);
 
             LoginAttempted?.BeginInvoke(error, null, null);
         }
