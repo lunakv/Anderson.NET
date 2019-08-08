@@ -72,7 +72,7 @@ namespace Anderson.Tests
         }
 
         [Test]
-        public void ReturnToStart()
+        public void ReturnToStartFromNewLogin()
         {
             var mock = new MockLoginModel();
             var sm = new StartViewModel(mock);
@@ -90,5 +90,24 @@ namespace Anderson.Tests
             CollectionAssert.AreEquivalent(mock.tokens.Keys.ToArray(), sm.SavedUsers.Select(x => x.Login).ToArray());
             Assert.Null(sm.ErrorMessage);  
         } 
+
+        [Test]
+        public void ReturnToStartFromTokenLogin()
+        {
+            var mock = new MockLoginModel();
+            var sm = new StartViewModel(mock);
+            sm.SwitchedToThis();
+
+            sm.SelectedUser = sm.SavedUsers[0];
+            sm.SwitchedToThis();
+
+            Assert.True(sm.NewLoginButton_Click.CanExecute());
+            Assert.Null(sm.SelectedUser);
+            Assert.True(sm.LoginAllowed);
+            Assert.True(string.IsNullOrEmpty(sm.ErrorMessage));
+            CollectionAssert.AreEquivalent(mock.tokens.Keys.ToArray(), sm.SavedUsers.Select(x => x.Login).ToArray());
+            Assert.Null(sm.ErrorMessage);
+
+        }
     }
 }

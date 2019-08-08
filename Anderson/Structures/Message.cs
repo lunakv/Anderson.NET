@@ -1,11 +1,13 @@
-﻿using Matrix.Client;
-using System;
-using System.Collections.ObjectModel;
+﻿using System;
 
 namespace Anderson.Structures
 {
+    // Message status (for instant send feedback). Not implemented
     public enum MessageStatus { Sending, Sent }
 
+    /// <summary>
+    /// Represents a single sent message
+    /// </summary>
     public class AndersonMessage
     {
         public DateTime SentTime { get; }
@@ -23,7 +25,8 @@ namespace Anderson.Structures
 
         public AndersonMessage(string content) : this(null, content, DateTime.Now, MessageStatus.Sent) { }
 
-        public static readonly AndersonMessage Loading = new AndersonMessage(null, "Loading...", DateTime.Now, MessageStatus.Sent);
-        public static readonly AndersonMessage Logout = new AndersonMessage(null, "Logging out...", DateTime.Now, MessageStatus.Sent);
+        // Status messages for display while loading
+        public static AndersonMessage Loading => new AndersonMessage(null, "Loading...", DateTime.Now, MessageStatus.Sent);
+        public static AndersonMessage Logout => new AndersonMessage(null, "Logging out...", DateTime.Now, MessageStatus.Sent);
     }
 }

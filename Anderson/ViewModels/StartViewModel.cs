@@ -1,8 +1,6 @@
 ﻿using Anderson.Models;
 using Anderson.Structures;
 using Prism.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Anderson.ViewModels
@@ -57,6 +55,7 @@ namespace Anderson.ViewModels
         #region Methods
         public override void SwitchedToThis()
         {
+            base.SwitchedToThis();
             _selectedUser = null;
             SavedUsers.Clear();
             foreach (TokenKey user in _loginBack.GetSavedUsers())

@@ -52,8 +52,8 @@ namespace Anderson.Structures
             return room;
         }
 
-        public static AndersonRoom LoadingRoom { get; } = RoomWithMessage(AndersonMessage.Loading);
-        public static AndersonRoom LogoutRoom { get; } = RoomWithMessage(AndersonMessage.Logout);
+        public static AndersonRoom LoadingRoom => RoomWithMessage(AndersonMessage.Loading);
+        public static AndersonRoom LogoutRoom => RoomWithMessage(AndersonMessage.Logout);
 
     }
 

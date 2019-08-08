@@ -1,11 +1,5 @@
-﻿using Anderson.Models;
-using Anderson.Structures;
+﻿using Anderson.Structures;
 using Prism.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Anderson.ViewModels
 {

@@ -1,7 +1,5 @@
 ﻿using Anderson.Models;
 using Prism.Commands;
-using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Anderson.ViewModels
@@ -87,6 +85,7 @@ namespace Anderson.ViewModels
         #region Methods
         public override void SwitchedToThis()
         {
+            base.SwitchedToThis();
             SaveToken = false;
             Username = "";
             ServerSet = ServerState.Connect;

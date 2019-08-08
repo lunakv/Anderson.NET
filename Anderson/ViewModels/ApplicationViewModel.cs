@@ -55,13 +55,21 @@ namespace Anderson.ViewModels
             CurrentPageViewModel = newVM ?? throw new NotImplementedException($"No ViewModel with name {vmName} exists.");
             if (newVM.ID == ViewModelID.Login || newVM.ID == ViewModelID.Start)
             {
-                _clientSyncRunning = false;
+                _clientSyncRunning = false; // sync threads are stopped on startup and after logout
             } 
             else if (newVM.ID == ViewModelID.User)
             {
                 _clientSyncRunning = true;
             }
-            newVM.SwitchedToThis();
+
+            if (App.Current.Dispatcher.CheckAccess())  // setup needs to be run from the UI thread
+            {
+                newVM.SwitchedToThis();
+            }
+            else
+            {
+                App.Current.Dispatcher.Invoke(newVM.SwitchedToThis);
+            }
         }
 
         public void Dispose()

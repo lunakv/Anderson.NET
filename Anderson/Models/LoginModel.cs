@@ -2,7 +2,6 @@
 using System.IO;
 using Matrix.Structures;
 using Matrix;
-using System.Net;
 using System.IO.IsolatedStorage;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +25,7 @@ namespace Anderson.Models
         string _tokenPath = "Tokens.dat";
         ClientProvider _cp;
 
+        // Events are called from the Async methods
         public event LoginHandler LoginCompleted;
         public event ConnectHandler ConnectCompleted;
         public event LoginHandler LogoutCompleted;
@@ -44,6 +44,8 @@ namespace Anderson.Models
 
         private bool IsWebException(AggregateException e)
         {
+            // MatrixAPI requests throw AggregateException
+            // This is used to check their contents
             foreach(var inner in e.InnerExceptions)
             {
                 if (!(inner is HttpRequestException)) return false;
@@ -202,8 +204,6 @@ namespace Anderson.Models
                             string[] values = line.Split('$');
                             var tK = new TokenKey(values[1], values[2]);
                             tokens[tK] = values[0];
-                            Console.WriteLine(line);
-                            Console.WriteLine($"User: {values[1]}, Token: {values[0]}");
                         }
                     }
                 }
@@ -213,6 +213,9 @@ namespace Anderson.Models
         private void SaveToken(MatrixLoginResponse login, string path, IsolatedStorageFile store)
         {
             var tokenKey = new TokenKey(login.user_id, _cp.Url);
+            if (_tokens.ContainsKey(tokenKey))      // Invariant: All tokens in file are loaded in dictionary -> this avoids duplicate lines in file
+                return;                             // Invariant: All tokens added to dictionary are immediately saved to file -> this doesn't prevent unsaved tokens
+
             _tokens[tokenKey] = login.access_token;
             using (var isoStream = new IsolatedStorageFileStream(path, FileMode.Append, FileAccess.Write, store))
             {
@@ -227,6 +230,7 @@ namespace Anderson.Models
         {   
             if (_tokens.Remove(token))
             {
+                // Reads the savefile line by line, omits, this TokenKey, then rewrites file
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
                 StringBuilder file = new StringBuilder();
                 using (var isoStream = new IsolatedStorageFileStream(_tokenPath, FileMode.Open, FileAccess.Read, isoStore))

@@ -48,6 +48,12 @@ namespace Anderson.ViewModels
             ViewChanged?.Invoke(type);
         }
 
-        public virtual void SwitchedToThis() { }
+        /// <summary>
+        /// Must be run whenever this ViewModel is selected as active
+        /// </summary>
+        public virtual void SwitchedToThis()
+        {
+            ErrorMessage = "";
+        }
     }
 }

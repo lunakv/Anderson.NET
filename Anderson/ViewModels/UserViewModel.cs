@@ -2,7 +2,6 @@
 using Anderson.Structures;
 using Matrix.Client;
 using Prism.Commands;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -27,7 +26,7 @@ namespace Anderson.ViewModels
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             Invites = new ObservableCollection<InviteViewModel>();
 
-            _roomBack.RoomReady += OnRoomReady;
+            _roomBack.RoomSyncCompleted += OnRoomReady;
             _roomBack.NewInvite += OnNewInvite;
             _roomBack.RoomJoined += OnRoomJoined;
             _loginBack.LogoutCompleted += OnLogoutAttempted;
@@ -129,6 +128,8 @@ namespace Anderson.ViewModels
         #region Methods
         public override void SwitchedToThis()
         {
+            base.SwitchedToThis();
+            CurrentRoomView = null;
             LogoutStatus = "Logout";
             AllRooms = _roomBack.GetAllRooms();
             CurrentUser = _roomBack.CurrentUser;
@@ -152,7 +153,7 @@ namespace Anderson.ViewModels
             }
             else
             {
-                _roomBack.RejectInvite(invite.Invite.Room);
+                _roomBack.RejectInviteAsync(invite.Invite.Room);
             }
         }
 
@@ -171,6 +172,7 @@ namespace Anderson.ViewModels
         {
             LogoutStatus = "Logging out";
             SendMessageText = "";
+            CurrentRoomView = AndersonRoom.LogoutRoom;
             _loginBack.LogoutAsync();
         }
 

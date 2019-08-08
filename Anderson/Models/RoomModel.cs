@@ -4,8 +4,6 @@ using Matrix.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using System.Runtime.Remoting.Messaging;
 
 namespace Anderson.Models
@@ -34,9 +32,11 @@ namespace Anderson.Models
             _cp.Api.OnInvite += OnInvite;
         }
 
+
         public MatrixUser CurrentUser => GetPerson(null);
 
-        public event RoomReadyHandler RoomReady;
+        // Events used from the Async methods
+        public event RoomReadyHandler RoomSyncCompleted;
         public event NewInviteHandler NewInvite;
         public event RoomJoinHandler RoomJoined;
 
@@ -53,23 +53,18 @@ namespace Anderson.Models
         /// </summary>
         public void InitializeRoomsAsync()
         {
-            FetchAllRooms();
-        }
-
-        /// <summary>
-        /// Fetches events for every room and adds them to the dictionary
-        /// </summary>
-        private void FetchAllRooms()
-        {
-            foreach(MatrixRoom room in _cp.Api?.GetAllRooms())
+            foreach (MatrixRoom room in _cp.Api?.GetAllRooms())
             {
                 FetchRoomAsync(room);
             }
         }
 
+        /// <summary>
+        /// Joins a room, if possible
+        /// </summary>
         public void JoinRoomAsync(string roomId)
         {
-            Func<string, MatrixRoom> join = JoinRoomSync;
+            Func<string, MatrixRoom> join = JoinRoom;
             join.BeginInvoke(roomId, JoinRoomFinished, roomId);
         }
 
@@ -83,19 +78,22 @@ namespace Anderson.Models
             RoomJoined?.Invoke(room, ar.AsyncState.ToString());
         }
 
-        private MatrixRoom JoinRoomSync(string roomId)
+        private MatrixRoom JoinRoom(string roomId)
         {
             MatrixRoom room = _cp.Api?.JoinRoom(roomId);
             return room;
         }
 
-        public void RejectInvite(string roomId)
+        /// <summary>
+        /// Rejects an invite sent to user to the room
+        /// </summary>
+        public void RejectInviteAsync(string roomId)
         {
             Action<string> reject = _cp.Api.RejectInvite;
             reject.BeginInvoke(roomId, ar => reject.EndInvoke(ar), null);
         }
 
-        public void OnInvite(string roomid, MatrixEventRoomInvited evt)
+        private void OnInvite(string roomid, MatrixEventRoomInvited evt)
         {
             NewInvite?.Invoke(new AndersonInvite() { Room = roomid, Time = DateTime.Now }) ;
         }
@@ -127,24 +125,14 @@ namespace Anderson.Models
 
         private void FetchRoomAsync(MatrixRoom room)
         {
-            Action<MatrixRoom> fetch = FetchRoomInternal;
+            Action<MatrixRoom> fetch = FetchRoom;
             fetch.BeginInvoke(
                 room,
-                ar => { _readyRooms.Add(room); RoomReady?.Invoke(room); fetch.EndInvoke(ar); },
+                ar => { _readyRooms.Add(room); RoomSyncCompleted?.Invoke(room); fetch.EndInvoke(ar); },
                 null);
         }
 
-        private void FetchRoomSync(MatrixRoom room)
-        {
-            Action<MatrixRoom> fetch = FetchRoomInternal;
-            var wait = fetch.BeginInvoke(
-                room,
-                _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
-                null);
-            fetch.EndInvoke(wait);
-        }
-
-        private void FetchRoomInternal(MatrixRoom room)
+        private void FetchRoom(MatrixRoom room)
         {
             MatrixEvent[] msgs = room.FetchMessages().chunk;
             _events[room] = new AndersonRoom(room);
@@ -159,11 +147,17 @@ namespace Anderson.Models
             room.OnMessage += AddEvent;
         }
 
+        /// <summary>
+        /// Gets all users connected to a room
+        /// </summary>
         public IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
         {
             return room.Members.Keys.Select(x => GetPerson(x));
         }
 
+        /// <summary>
+        /// Gets a basic representation of a user
+        /// </summary>
         public MatrixUser GetPerson(string id)
         {
             if (_cp.Api == null) return null;
@@ -172,6 +166,9 @@ namespace Anderson.Models
             return get.EndInvoke(ar);
         }
 
+        /// <summary>
+        /// Checks that the recieved event is a message
+        /// </summary>
         public bool IsMessage(MatrixEvent evt)
         {
             return evt.type == "m.room.message";

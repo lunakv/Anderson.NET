@@ -3,7 +3,7 @@ using Matrix.Client;
 using Matrix.Structures;
 using System.Collections.Generic;
 
-// The interfaces of Models for unit testing
+// The interfaces of Models, mainly for unit testing
 namespace Anderson.Models
 {
     public interface ILoginModel
@@ -23,7 +23,7 @@ namespace Anderson.Models
 
     public interface IRoomModel
     {
-        event RoomReadyHandler RoomReady;
+        event RoomReadyHandler RoomSyncCompleted;
         event NewInviteHandler NewInvite;
         event RoomJoinHandler RoomJoined;
         MatrixUser CurrentUser { get; }
@@ -40,12 +40,6 @@ namespace Anderson.Models
 
         void JoinRoomAsync(string roomid);
 
-        void RejectInvite(string roomid);
-    }
-
-    public interface IPersonModel
-    {
-        IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
-        MatrixUser GetPerson(string id);
+        void RejectInviteAsync(string roomid);
     }
 }
