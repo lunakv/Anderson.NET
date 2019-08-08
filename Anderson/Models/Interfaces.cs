@@ -8,17 +8,17 @@ namespace Anderson.Models
 {
     public interface ILoginModel
     {
-        void ConnectToServer(string url);
-        void Login(string username, string password, bool saveToken);
-        void Logout();
+        void ConnectToServerAsync(string url);
+        void LoginAsync(string username, string password, bool saveToken);
+        void LogoutAsync();
         bool RequiresLogin(TokenKey user);
         IEnumerable<TokenKey> GetSavedUsers();
-        void LoginWithToken(TokenKey user);
+        void LoginWithTokenAsync(TokenKey user);
         void DeleteToken(TokenKey userId);
 
-        event LoginHandler LoginAttempted;
-        event ConnectHandler ConnectAttempted;
-        event LoginHandler LogoutAttempted;
+        event LoginHandler LoginCompleted;
+        event ConnectHandler ConnectCompleted;
+        event LoginHandler LogoutCompleted;
     }
 
     public interface IRoomModel
@@ -29,16 +29,16 @@ namespace Anderson.Models
         MatrixUser CurrentUser { get; }
 
         IEnumerable<MatrixRoom> GetAllRooms();
-        void Initialize();    
-        void InviteToRoom(MatrixRoom room, string id);
+        void InitializeRoomsAsync();    
+        void InviteToRoomAsync(MatrixRoom room, string id);
         AndersonRoom GetRoomView(MatrixRoom room);
         bool IsReady(MatrixRoom room);
         bool IsMessage(MatrixEvent evt);
-        void SendTextMessage(MatrixRoom room, string message);
+        void SendTextMessageAsync(MatrixRoom room, string message);
         IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
         MatrixUser GetPerson(string id);
 
-        void JoinRoom(string roomid);
+        void JoinRoomAsync(string roomid);
 
         void RejectInvite(string roomid);
     }

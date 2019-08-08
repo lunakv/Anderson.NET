@@ -99,24 +99,24 @@ namespace Anderson.ViewModels
         // PasswordBox is sent as object parameter, since it has no DependencyProperty to bind on
         private void AttemptLogin(object obj)
         {
-            _loginBack.LoginAttempted += OnLoginFinished;
+            _loginBack.LoginCompleted += OnLoginFinished;
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
-            _loginBack.Login(Username, ((PasswordBox)obj).Password, SaveToken);
+            _loginBack.LoginAsync(Username, ((PasswordBox)obj).Password, SaveToken);
         }
 
         private void AttemptConnection()
         {
             ServerSet = ServerState.Connecting;
             string url = ServerUrlPrefixes[ServerUrlPrefixIndex] + ServerUrl;
-            _loginBack.ConnectAttempted += OnConnectAttempted;
-            _loginBack.ConnectToServer(url);
+            _loginBack.ConnectCompleted += OnConnectAttempted;
+            _loginBack.ConnectToServerAsync(url);
 
         }
 
         private void OnConnectAttempted(string error, string url)
         {
-            _loginBack.ConnectAttempted -= OnConnectAttempted;
+            _loginBack.ConnectCompleted -= OnConnectAttempted;
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
@@ -130,7 +130,7 @@ namespace Anderson.ViewModels
         private void OnLoginFinished(string error)
         {
             LoginInProgress = false;
-            _loginBack.LoginAttempted -= OnLoginFinished;
+            _loginBack.LoginCompleted -= OnLoginFinished;
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
@@ -138,7 +138,7 @@ namespace Anderson.ViewModels
             else
             {
                 ErrorMessage = "";
-                SendViewChange(ViewModelID.User);
+                RaiseViewChanged(ViewModelID.User);
             }
         }
 

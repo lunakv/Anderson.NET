@@ -30,7 +30,7 @@ namespace Anderson.ViewModels
             _roomBack.RoomReady += OnRoomReady;
             _roomBack.NewInvite += OnNewInvite;
             _roomBack.RoomJoined += OnRoomJoined;
-            _loginBack.LogoutAttempted += OnLogoutAttempted;
+            _loginBack.LogoutCompleted += OnLogoutAttempted;
 
         }
 
@@ -132,14 +132,14 @@ namespace Anderson.ViewModels
             LogoutStatus = "Logout";
             AllRooms = _roomBack.GetAllRooms();
             CurrentUser = _roomBack.CurrentUser;
-            _roomBack.Initialize();
+            _roomBack.InitializeRoomsAsync();
         }
 
         private void SendNewMessage()
         {
             if (SelectedRoom == null) return;
 
-            _roomBack.SendTextMessage(SelectedRoom, SendMessageText);
+            _roomBack.SendTextMessageAsync(SelectedRoom, SendMessageText);
             SendMessageText = "";
         }
 
@@ -148,7 +148,7 @@ namespace Anderson.ViewModels
             RemoveInvite(invite);
             if (accept)
             {
-                _roomBack.JoinRoom(invite.Invite.Room);
+                _roomBack.JoinRoomAsync(invite.Invite.Room);
             }
             else
             {
@@ -171,7 +171,7 @@ namespace Anderson.ViewModels
         {
             LogoutStatus = "Logging out";
             SendMessageText = "";
-            _loginBack.Logout();
+            _loginBack.LogoutAsync();
         }
 
         private void LoadRoom(MatrixRoom room)
@@ -223,7 +223,7 @@ namespace Anderson.ViewModels
             }
             else
             {
-                SendViewChange(ViewModelID.Start);
+                RaiseViewChanged(ViewModelID.Start);
             }
         }
         #endregion

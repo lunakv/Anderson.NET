@@ -51,7 +51,7 @@ namespace Anderson.Models
         /// <summary>
         /// Start initialization of all rooms. Must be run for proper function
         /// </summary>
-        public void Initialize()
+        public void InitializeRoomsAsync()
         {
             FetchAllRooms();
         }
@@ -67,7 +67,7 @@ namespace Anderson.Models
             }
         }
 
-        public void JoinRoom(string roomId)
+        public void JoinRoomAsync(string roomId)
         {
             Func<string, MatrixRoom> join = JoinRoomSync;
             join.BeginInvoke(roomId, JoinRoomFinished, roomId);
@@ -103,7 +103,7 @@ namespace Anderson.Models
         /// <summary>
         /// Invite a user to a room by userid
         /// </summary>
-        public void InviteToRoom(MatrixRoom room, string id)
+        public void InviteToRoomAsync(MatrixRoom room, string id)
         {
             Action<string> invite = room.InviteToRoom;
             invite.BeginInvoke(id, ar => invite.EndInvoke(ar), null);
@@ -186,7 +186,7 @@ namespace Anderson.Models
         /// <summary>
         /// Send a text message to an initialized room
         /// </summary>
-        public void SendTextMessage(MatrixRoom room, string message)
+        public void SendTextMessageAsync(MatrixRoom room, string message)
         {
             if (_events.ContainsKey(room))
             {

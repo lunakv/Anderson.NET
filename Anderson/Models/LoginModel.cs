@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using Anderson.Structures;
 using System.Runtime.Remoting.Messaging;
+using System.Net.Http;
 
 namespace Anderson.Models
 {
@@ -25,9 +26,9 @@ namespace Anderson.Models
         string _tokenPath = "Tokens.dat";
         ClientProvider _cp;
 
-        public event LoginHandler LoginAttempted;
-        public event ConnectHandler ConnectAttempted;
-        public event LoginHandler LogoutAttempted;
+        public event LoginHandler LoginCompleted;
+        public event ConnectHandler ConnectCompleted;
+        public event LoginHandler LogoutCompleted;
 
         public LoginModel(ClientProvider cp)
         {
@@ -45,13 +46,13 @@ namespace Anderson.Models
         {
             foreach(var inner in e.InnerExceptions)
             {
-                if (!(inner is WebException)) return false;
+                if (!(inner is HttpRequestException)) return false;
             }
 
             return true;
         }
 
-        public void Login(string username, string password, bool saveToken = false)
+        public void LoginAsync(string username, string password, bool saveToken = false)
         {
             LoginDelegate login = LoginSync;
             login.BeginInvoke(username, password, saveToken, LoginFinished, null);
@@ -63,7 +64,7 @@ namespace Anderson.Models
             AsyncResult result = (AsyncResult)ar;
             LoginDelegate login = (LoginDelegate) result.AsyncDelegate;
             string error = login.EndInvoke(ar);
-            LoginAttempted?.Invoke(error);
+            LoginCompleted?.Invoke(error);
         }
 
         private string LoginSync(string username, string password, bool saveToken = false)
@@ -90,9 +91,9 @@ namespace Anderson.Models
             return error;
         }
 
-        public void ConnectToServer(string url)
+        public void ConnectToServerAsync(string url)
         {
-            Func<string, string> connect = ConnectToServerSync;
+            Func<string, string> connect = ConnectToServer;
             connect.BeginInvoke(url, ConnectToServerFinished, url);
         }
 
@@ -101,11 +102,11 @@ namespace Anderson.Models
             var result = (AsyncResult)ar;
             var connect = (Func<string, string>)result.AsyncDelegate;
             string error = connect.EndInvoke(ar);
-            ConnectAttempted?.Invoke(error, result.AsyncState.ToString());
+            ConnectCompleted?.Invoke(error, result.AsyncState.ToString());
         }
 
 
-        private string ConnectToServerSync(string url)
+        public string ConnectToServer(string url)
         {
             string error = null;
             try
@@ -120,29 +121,29 @@ namespace Anderson.Models
             return error;
         }
 
-        public void Logout()
+        public void LogoutAsync()
         {
-            Func<string> logout = LogoutSync;
+            Func<string> logout = Logout;
             logout.BeginInvoke(LogoutFinished, null);
         }
 
-        private void LogoutFinished(IAsyncResult ar)
+        public void LogoutFinished(IAsyncResult ar)
         {
             var result = (AsyncResult)ar;
             var logout = (Func<string>)result.AsyncDelegate;
             string error = logout.EndInvoke(ar);
-            LogoutAttempted?.Invoke(error);
+            LogoutCompleted?.Invoke(error);
         }
 
-        private string LogoutSync()
+        private string Logout()
         {
             _cp.RestartApi();
             return null;
         }
 
-        public void LoginWithToken(TokenKey user)
+        public void LoginWithTokenAsync(TokenKey user)
         {
-            Func<TokenKey, string> login = LoginWithTokenSync;
+            Func<TokenKey, string> login = LoginWithToken;
             login.BeginInvoke(user, LoginWithTokenFinished, null);
         }
 
@@ -151,16 +152,16 @@ namespace Anderson.Models
             var result = (AsyncResult)ar;
             var login = (Func<TokenKey, string>)result.AsyncDelegate;
             string error = login.EndInvoke(ar);
-            LoginAttempted?.Invoke(error);
+            LoginCompleted?.Invoke(error);
         }
 
-        private string LoginWithTokenSync(TokenKey user)
+        public string LoginWithToken(TokenKey user)
         {
             string error = null;
             if (!_tokens.ContainsKey(user)) return "No login token exists for this user.";
             if (_cp.Url != user.Server)
             {
-                error = ConnectToServerSync(user.Server);
+                error = ConnectToServer(user.Server);
                 if (!string.IsNullOrEmpty(error)) return error;
             }
 

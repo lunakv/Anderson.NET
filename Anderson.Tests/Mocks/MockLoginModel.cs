@@ -8,9 +8,9 @@ namespace Anderson.Tests.Mocks
 {
     class MockLoginModel : ILoginModel
     {
-        public event LoginHandler LoginAttempted;
-        public event ConnectHandler ConnectAttempted;
-        public event LoginHandler LogoutAttempted;
+        public event LoginHandler LoginCompleted;
+        public event ConnectHandler ConnectCompleted;
+        public event LoginHandler LogoutCompleted;
 
         public string ConnectedServer;
         public Dictionary<TokenKey, string> tokens = new Dictionary<TokenKey, string>();
@@ -21,10 +21,10 @@ namespace Anderson.Tests.Mocks
             tokens.Add(Utils.ValidKey, Utils.ValidToken);
         }
 
-        public void ConnectToServer(string url)
+        public void ConnectToServerAsync(string url)
         {
             ConnectedServer = url;
-            ConnectAttempted?.Invoke(null, url);
+            ConnectCompleted?.Invoke(null, url);
         }
 
         public void DeleteToken(TokenKey userId)
@@ -37,7 +37,7 @@ namespace Anderson.Tests.Mocks
             return tokens.Keys;
         }
 
-        public void Login(string username, string password, bool saveToken)
+        public void LoginAsync(string username, string password, bool saveToken)
         {
             string error;
             CheckServer();
@@ -53,10 +53,10 @@ namespace Anderson.Tests.Mocks
                 error = "Invalid password";
             }
 
-            LoginAttempted?.Invoke(error);
+            LoginCompleted?.Invoke(error);
         }
 
-        public void LoginWithToken(TokenKey user)
+        public void LoginWithTokenAsync(TokenKey user)
         {
             string error;
             ConnectedServer = user.Server;
@@ -68,10 +68,10 @@ namespace Anderson.Tests.Mocks
             else
                 error = "Invalid Password";
 
-            LoginAttempted?.Invoke(error);
+            LoginCompleted?.Invoke(error);
         }
 
-        public void Logout()
+        public void LogoutAsync()
         {
             ConnectedServer = null;
             CurrentUser = new TokenKey();

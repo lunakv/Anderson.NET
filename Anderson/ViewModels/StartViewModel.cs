@@ -19,7 +19,7 @@ namespace Anderson.ViewModels
             _loginBack = loginBack;
             NewLoginButton_Click = new DelegateCommand(
                 SwitchViewModels,
-                () => !LoginInProgress
+                () => LoginAllowed
                 );
 
             SavedUsers = new ObservableCollection<TokenViewModel>();
@@ -28,8 +28,6 @@ namespace Anderson.ViewModels
                 var tVM = new TokenViewModel(user);
                 tVM.TokenDeleted += RemoveToken;
                 SavedUsers.Add(tVM);
-
-
             }
         }
 
@@ -37,13 +35,14 @@ namespace Anderson.ViewModels
         public DelegateCommand NewLoginButton_Click { get; }
         public override ViewModelID ID => ViewModelID.Start;
 
-        private bool _loginInProgress = false;
-        public bool LoginInProgress
+        private bool _loginAllowed = true;
+        public bool LoginAllowed
         {
-            get => _loginInProgress;
+            get => _loginAllowed;
             set
             {
-                _loginInProgress = value;
+                _loginAllowed = value;
+                OnPropertyChanged(nameof(LoginAllowed));
                 NewLoginButton_Click.RaiseCanExecuteChanged();
             }
         }
@@ -73,20 +72,19 @@ namespace Anderson.ViewModels
         /// </summary>
         public void SwitchViewModels()
         {
+            if (!LoginAllowed) return;
 
+            LoginAllowed = false;
             if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser.Login))
             {
-                SendViewChange(ViewModelID.Login);
+                RaiseViewChanged(ViewModelID.Login);
                 return;
             }
             else
             {
-                _loginBack.LoginAttempted += OnLoginFinished;
-                Action<TokenKey> login = _loginBack.LoginWithToken;
-                LoginInProgress = true;
-                login.Invoke(SelectedUser.Login);
+                _loginBack.LoginCompleted += OnLoginFinished;
+                _loginBack.LoginWithTokenAsync(SelectedUser.Login);
                 ErrorMessage = "You are logged in. Connecting...";
-
             }
         }
 
@@ -98,15 +96,15 @@ namespace Anderson.ViewModels
 
         private void OnLoginFinished(string error)
         {
-            LoginInProgress = false;
+            _loginBack.LoginCompleted -= OnLoginFinished;
             if (!string.IsNullOrEmpty(error))
             {
+                LoginAllowed = true;
                 ErrorMessage = error;
             }
             else
             {
-                _loginBack.LoginAttempted -= OnLoginFinished;
-                SendViewChange(ViewModelID.User);
+                RaiseViewChanged(ViewModelID.User);
             }
         }
         #endregion

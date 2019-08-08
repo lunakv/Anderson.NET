@@ -61,6 +61,7 @@
         <GroupBox Header="{Binding Path=Invites.Count}" HeaderStringFormat="Invites ({0})" HorizontalAlignment="Left" Height="40" Margin="163,0,0,0" VerticalAlignment="Top" Width="138">
                 <ComboBox ItemsSource="{Binding Invites}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128"/>
         </GroupBox>
+        <Label Content="{Binding Path=ErrorMessage}" Foreground="Red" HorizontalAlignment="Left" Margin="350,10,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 

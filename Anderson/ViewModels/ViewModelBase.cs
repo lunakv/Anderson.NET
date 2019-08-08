@@ -43,7 +43,7 @@ namespace Anderson.ViewModels
         /// ViewModel switching system. Registered by ApplicationViewModel
         /// </summary>
         public event ViewModelSwitchHandler ViewChanged;
-        protected void SendViewChange(ViewModelID type)
+        protected void RaiseViewChanged(ViewModelID type)
         {
             ViewChanged?.Invoke(type);
         }
