@@ -15,7 +15,7 @@ namespace Anderson.Tests
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
 
-            Assert.False(lvm.ServerSet);
+            Assert.AreEqual(ServerState.Connect, lvm.ServerSet);
             Assert.False(lvm.LoginButton_Click.CanExecute(null));
             Assert.False(lvm.Server_Connect.CanExecute());
             Assert.True(string.IsNullOrEmpty(lvm.ServerUrl));
@@ -35,6 +35,7 @@ namespace Anderson.Tests
             lvm.Server_Connect.Execute();
 
             Assert.AreEqual("https://localserver", mock.ConnectedServer);
+            Assert.AreEqual(ServerState.Connected, lvm.ServerSet);
             Assert.False(lvm.LoginButton_Click.CanExecute(null));
             Assert.False(lvm.Server_Connect.CanExecute());
         }
@@ -129,7 +130,7 @@ namespace Anderson.Tests
             lvm.LoginButton_Click.Execute(pass);
 
             lvm.SwitchedToThis();
-            Assert.False(lvm.ServerSet);
+            Assert.AreEqual(ServerState.Connected, lvm.ServerSet);
             Assert.False(lvm.LoginButton_Click.CanExecute(null));
             Assert.False(lvm.Server_Connect.CanExecute());
             Assert.True(string.IsNullOrEmpty(lvm.ServerUrl));

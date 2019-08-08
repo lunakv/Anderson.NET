@@ -7,10 +7,5 @@ using System.Threading.Tasks;
 
 namespace Anderson.Tests
 {
-    [TestFixture, RequiresThread(System.Threading.ApartmentState.STA)]
-    class UserViewModel_Tests
-    {
-        [Test]
-        public void 
-    }
+    
 }

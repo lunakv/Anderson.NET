@@ -20,8 +20,8 @@
         <GroupBox Header="Server" HorizontalAlignment="Left" Height="50" Margin="239,116,0,0" VerticalAlignment="Top" Width="308">
             <StackPanel Orientation="Horizontal">
                 <ComboBox SelectedIndex="{Binding Path=ServerUrlPrefixIndex}" ItemsSource="{Binding Path=ServerUrlPrefixes}" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="70" />
-                <TextBox Text="{Binding Path=ServerUrl, UpdateSourceTrigger=PropertyChanged}" Width="170" Margin="0,0,0,5"></TextBox>
-                <Button Content="Connect" Command="{Binding Path=Server_Connect}" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="55" Height="23"/>
+                <TextBox Text="{Binding Path=ServerUrl, UpdateSourceTrigger=PropertyChanged}" Width="160" Margin="0,0,0,5"></TextBox>
+                <Button Content="{Binding Path=ServerSet}" Command="{Binding Path=Server_Connect}" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="65" Height="23"/>
 
             </StackPanel>
             

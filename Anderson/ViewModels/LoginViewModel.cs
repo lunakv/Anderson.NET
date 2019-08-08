@@ -6,6 +6,7 @@ using System.Windows.Controls;
 
 namespace Anderson.ViewModels
 {
+    public enum ServerState { Connect, Connecting, Connected }
     /// <summary>
     /// The new user login page
     /// </summary>
@@ -19,11 +20,11 @@ namespace Anderson.ViewModels
 
             LoginButton_Click = new DelegateCommand<object>(
                 AttemptLogin,
-                o => !string.IsNullOrEmpty(Username) && !LoginInProgress && ServerSet
-                ) ;
+                o => !string.IsNullOrEmpty(Username) && !LoginInProgress && ServerSet == ServerState.Connected
+                );
             Server_Connect = new DelegateCommand(
                 AttemptConnection,
-                () => !string.IsNullOrEmpty(ServerUrl) && !ConnectInProgress && !ServerSet);
+                () => !string.IsNullOrEmpty(ServerUrl) && !ConnectInProgress && ServerSet == ServerState.Connect);
 
         }
 
@@ -80,8 +81,8 @@ namespace Anderson.ViewModels
             }
         }
 
-        private bool _serverSet;
-        public bool ServerSet
+        private ServerState _serverSet;
+        public ServerState ServerSet
         {
             get { return _serverSet; }
             set
@@ -89,6 +90,7 @@ namespace Anderson.ViewModels
                 _serverSet = value;
                 LoginButton_Click.RaiseCanExecuteChanged();
                 Server_Connect.RaiseCanExecuteChanged();
+                OnPropertyChanged(nameof(ServerSet));
             }
         }
         #endregion
@@ -98,17 +100,31 @@ namespace Anderson.ViewModels
         private void AttemptLogin(object obj)
         {
             _loginBack.LoginAttempted += OnLoginFinished;
-            Action<string, string, bool> login = _loginBack.Login;
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
-            login.Invoke(Username, ((PasswordBox)obj).Password, SaveToken);
+            _loginBack.Login(Username, ((PasswordBox)obj).Password, SaveToken);
         }
 
         private void AttemptConnection()
         {
+            ServerSet = ServerState.Connecting;
             string url = ServerUrlPrefixes[ServerUrlPrefixIndex] + ServerUrl;
+            _loginBack.ConnectAttempted += OnConnectAttempted;
             _loginBack.ConnectToServer(url);
-            ServerSet = true;
+
+        }
+
+        private void OnConnectAttempted(string error, string url)
+        {
+            _loginBack.ConnectAttempted -= OnConnectAttempted;
+            if (!string.IsNullOrEmpty(error))
+            {
+                ErrorMessage = error;
+            }
+            else
+            {
+                ServerSet = ServerState.Connected;
+            }
         }
 
         private void OnLoginFinished(string error)

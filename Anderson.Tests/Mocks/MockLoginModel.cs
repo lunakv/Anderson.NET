@@ -9,6 +9,9 @@ namespace Anderson.Tests.Mocks
     class MockLoginModel : ILoginModel
     {
         public event LoginHandler LoginAttempted;
+        public event ConnectHandler ConnectAttempted;
+        public event LoginHandler LogoutAttempted;
+
         public string ConnectedServer;
         public Dictionary<TokenKey, string> tokens = new Dictionary<TokenKey, string>();
         public TokenKey CurrentUser;
@@ -21,6 +24,7 @@ namespace Anderson.Tests.Mocks
         public void ConnectToServer(string url)
         {
             ConnectedServer = url;
+            ConnectAttempted?.Invoke(null, url);
         }
 
         public void DeleteToken(TokenKey userId)

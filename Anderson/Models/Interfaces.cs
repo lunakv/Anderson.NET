@@ -17,6 +17,8 @@ namespace Anderson.Models
         void DeleteToken(TokenKey userId);
 
         event LoginHandler LoginAttempted;
+        event ConnectHandler ConnectAttempted;
+        event LoginHandler LogoutAttempted;
     }
 
     public interface IRoomModel

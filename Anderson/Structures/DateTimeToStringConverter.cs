@@ -9,8 +9,7 @@ namespace Anderson.Structures
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var date = (DateTime)value;
-            return $"{date.Hour}:{date.Minute}\t";
+            return ((DateTime)value).ToString("t", CultureInfo.InvariantCulture) + "\t";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -7,10 +7,13 @@ using System.IO.IsolatedStorage;
 using System.Collections.Generic;
 using System.Text;
 using Anderson.Structures;
+using System.Runtime.Remoting.Messaging;
 
 namespace Anderson.Models
 {
     public delegate void LoginHandler(string error);
+    public delegate void ConnectHandler(string error, string url);
+    public delegate string LoginDelegate(string user, string password, bool save);
 
     /// <summary>
     /// A login providing backend
@@ -23,6 +26,8 @@ namespace Anderson.Models
         ClientProvider _cp;
 
         public event LoginHandler LoginAttempted;
+        public event ConnectHandler ConnectAttempted;
+        public event LoginHandler LogoutAttempted;
 
         public LoginModel(ClientProvider cp)
         {
@@ -36,67 +41,137 @@ namespace Anderson.Models
             return !_tokens.ContainsKey(user);
         }
 
+        private bool IsWebException(AggregateException e)
+        {
+            foreach(var inner in e.InnerExceptions)
+            {
+                if (!(inner is WebException)) return false;
+            }
+
+            return true;
+        }
+
         public void Login(string username, string password, bool saveToken = false)
+        {
+            LoginDelegate login = LoginSync;
+            login.BeginInvoke(username, password, saveToken, LoginFinished, null);
+   
+        }
+
+        private void LoginFinished(IAsyncResult ar)
+        {
+            AsyncResult result = (AsyncResult)ar;
+            LoginDelegate login = (LoginDelegate) result.AsyncDelegate;
+            string error = login.EndInvoke(ar);
+            LoginAttempted?.Invoke(error);
+        }
+
+        private string LoginSync(string username, string password, bool saveToken = false)
         {
             string error = null;
             try
             {
+                MatrixLoginResponse response = _cp.Api.LoginWithPassword(username, password);
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
-                MatrixLoginResponse response = null;
-                Action login = () => response = _cp.Api.LoginWithPassword(username, password);
-                var wait = login.BeginInvoke(null, null);
-                login.EndInvoke(wait);
 
                 if (saveToken) SaveToken(response, _tokenPath, isoStore);
-                Action<string> sync =  _cp.Api.StartSync;
-                wait = sync.BeginInvoke("", null, null);
-                sync.EndInvoke(wait);
+                _cp.Api.StartSync();
             }
             catch (MatrixException e)
             {
-                error = e.Message;
+                throw new ConnectivityException(e.Message, _cp.Url, e);
             }
             catch (AggregateException e)
             {
-                foreach (var inner in e.InnerExceptions)
-                {
-                    if (!(inner is WebException)) throw e;
-
-                    error =  "Could not connect to the server. Please check your internet connection.";
-                }
+                if (!IsWebException(e)) throw e;
+                error = "Server connection failed";
             }
 
-            LoginAttempted?.BeginInvoke(error, null, null);
+            return error;
         }
 
         public void ConnectToServer(string url)
         {
-            Action<string> connect = _cp.EstablishConnection;
-            var wait = connect.BeginInvoke(url, null, null);
-            connect.EndInvoke(wait);
+            Func<string, string> connect = ConnectToServerSync;
+            connect.BeginInvoke(url, ConnectToServerFinished, url);
+        }
+
+        private void ConnectToServerFinished(IAsyncResult ar)
+        {
+            var result = (AsyncResult)ar;
+            var connect = (Func<string, string>)result.AsyncDelegate;
+            string error = connect.EndInvoke(ar);
+            ConnectAttempted?.Invoke(error, result.AsyncState.ToString());
+        }
+
+
+        private string ConnectToServerSync(string url)
+        {
+            string error = null;
+            try
+            {
+                _cp.EstablishConnection(url);
+            }
+            catch (AggregateException e)
+            {
+                if (!IsWebException(e)) throw e;
+                error = "Server connection failed.";
+            }
+            return error;
         }
 
         public void Logout()
         {
-            Action logout =_cp.RestartApi;
-            var wait = logout.BeginInvoke(null, null);
-            logout.EndInvoke(wait);
+            Func<string> logout = LogoutSync;
+            logout.BeginInvoke(LogoutFinished, null);
+        }
+
+        private void LogoutFinished(IAsyncResult ar)
+        {
+            var result = (AsyncResult)ar;
+            var logout = (Func<string>)result.AsyncDelegate;
+            string error = logout.EndInvoke(ar);
+            LogoutAttempted?.Invoke(error);
+        }
+
+        private string LogoutSync()
+        {
+            _cp.RestartApi();
+            return null;
         }
 
         public void LoginWithToken(TokenKey user)
         {
+            Func<TokenKey, string> login = LoginWithTokenSync;
+            login.BeginInvoke(user, LoginFinished, null);
+        }
+
+        public string LoginWithTokenSync(TokenKey user)
+        {
             string error = null;
-            if (!_tokens.ContainsKey(user)) throw new InvalidOperationException("No login token exists.");
-            if (_cp.Url != user.Server) ConnectToServer(user.Server);
+            if (!_tokens.ContainsKey(user)) return "No login token exists for this user.";
+            if (_cp.Url != user.Server)
+            {
+                error = ConnectToServerSync(user.Server);
+                if (!string.IsNullOrEmpty(error)) return error;
+            }
 
-            Action<string, string> use = _cp.Api.UseExistingToken;
-            var wait = use.BeginInvoke(user.UserId, _tokens[user], null, null);
-            use.EndInvoke(wait);
-            Action<string> sync = _cp.Api.StartSync;
-            wait = sync.BeginInvoke("", null, null);
-            sync.EndInvoke(wait);
+            try
+            {
+                _cp.Api.UseExistingToken(user.UserId, _tokens[user]);
+                _cp.Api.StartSync();
+            }
+            catch (MatrixException e)
+            {
+                return e.Message;
+            }
+            catch (AggregateException e)
+            {
+                if (!IsWebException(e)) throw e;
+                return "Server connection failed.";
+            }
 
-            LoginAttempted?.BeginInvoke(error, null, null);
+            return error;
         }
 
         public IEnumerable<TokenKey> GetSavedUsers()
