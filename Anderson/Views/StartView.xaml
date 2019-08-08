@@ -13,7 +13,7 @@
     </UserControl.Resources>
     
     <Grid>
-        <Label Content="{Binding Path=ErrorMessage}" ></Label>
+        <Label Content="{Binding Path=ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,75"/>
         <Button Content="New User" Command="{Binding Path=NewLoginButton_Click}"  Height="47" Margin="353,303,331,80"/>
         <ListBox x:Name="TokenBox" ItemsSource="{Binding Path=SavedUsers}" IsEnabled="{Binding Path=LoginAllowed}" SelectedItem="{Binding Path=SelectedUser, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="100" Margin="184,119,0,0" VerticalAlignment="Top" Width="447"/>
     </Grid>

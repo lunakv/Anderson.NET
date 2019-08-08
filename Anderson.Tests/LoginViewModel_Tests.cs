@@ -37,7 +37,7 @@ namespace Anderson.Tests
             Assert.AreEqual("https://localserver", mock.ConnectedServer);
             Assert.AreEqual(ServerState.Connected, lvm.ServerSet);
             Assert.False(lvm.LoginButton_Click.CanExecute(null));
-            Assert.False(lvm.Server_Connect.CanExecute());
+            Assert.True(lvm.Server_Connect.CanExecute());
         }
 
         [Test]
@@ -130,10 +130,10 @@ namespace Anderson.Tests
             lvm.LoginButton_Click.Execute(pass);
 
             lvm.SwitchedToThis();
-            Assert.AreEqual(ServerState.Connected, lvm.ServerSet);
+            Assert.AreEqual(ServerState.Connect, lvm.ServerSet);
             Assert.False(lvm.LoginButton_Click.CanExecute(null));
-            Assert.False(lvm.Server_Connect.CanExecute());
-            Assert.True(string.IsNullOrEmpty(lvm.ServerUrl));
+            Assert.AreEqual("localserver", lvm.ServerUrl);
+            Assert.True(lvm.Server_Connect.CanExecute());
             Assert.True(string.IsNullOrEmpty(lvm.Username));
             Assert.False(lvm.SaveToken);
         }

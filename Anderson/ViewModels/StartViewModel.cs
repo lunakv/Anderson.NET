@@ -17,18 +17,11 @@ namespace Anderson.ViewModels
         public StartViewModel(ILoginModel loginBack)
         {
             _loginBack = loginBack;
+            SavedUsers = new ObservableCollection<TokenViewModel>();
             NewLoginButton_Click = new DelegateCommand(
                 SwitchViewModels,
                 () => LoginAllowed
                 );
-
-            SavedUsers = new ObservableCollection<TokenViewModel>();
-            foreach (TokenKey user in _loginBack.GetSavedUsers())
-            {
-                var tVM = new TokenViewModel(user);
-                tVM.TokenDeleted += RemoveToken;
-                SavedUsers.Add(tVM);
-            }
         }
 
         #region Commands & properties
@@ -65,6 +58,13 @@ namespace Anderson.ViewModels
         public override void SwitchedToThis()
         {
             _selectedUser = null;
+            SavedUsers.Clear();
+            foreach (TokenKey user in _loginBack.GetSavedUsers())
+            {
+                var tVM = new TokenViewModel(user);
+                tVM.TokenDeleted += RemoveToken;
+                SavedUsers.Add(tVM);
+            }
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Anderson.ViewModels
         {
             if (!LoginAllowed) return;
 
-            LoginAllowed = false;
+            
             if (SelectedUser == null || _loginBack.RequiresLogin(SelectedUser.Login))
             {
                 RaiseViewChanged(ViewModelID.Login);
@@ -82,6 +82,7 @@ namespace Anderson.ViewModels
             }
             else
             {
+                LoginAllowed = false;
                 _loginBack.LoginCompleted += OnLoginFinished;
                 _loginBack.LoginWithTokenAsync(SelectedUser.Login);
                 ErrorMessage = "You are logged in. Connecting...";
@@ -97,9 +98,9 @@ namespace Anderson.ViewModels
         private void OnLoginFinished(string error)
         {
             _loginBack.LoginCompleted -= OnLoginFinished;
+            LoginAllowed = true;
             if (!string.IsNullOrEmpty(error))
             {
-                LoginAllowed = true;
                 ErrorMessage = error;
             }
             else

@@ -85,6 +85,8 @@ namespace Anderson.Tests
 
             Assert.True(sm.NewLoginButton_Click.CanExecute());
             Assert.Null(sm.SelectedUser);
+            Assert.True(sm.LoginAllowed);
+            Assert.True(string.IsNullOrEmpty(sm.ErrorMessage));
             CollectionAssert.AreEquivalent(mock.tokens.Keys.ToArray(), sm.SavedUsers.Select(x => x.Login).ToArray());
             Assert.Null(sm.ErrorMessage);  
         } 

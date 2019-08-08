@@ -24,7 +24,7 @@ namespace Anderson.ViewModels
                 );
             Server_Connect = new DelegateCommand(
                 AttemptConnection,
-                () => !string.IsNullOrEmpty(ServerUrl) && !ConnectInProgress && ServerSet == ServerState.Connect);
+                () => !string.IsNullOrEmpty(ServerUrl) && ServerSet != ServerState.Connecting);
 
         }
 
@@ -53,17 +53,6 @@ namespace Anderson.ViewModels
             {
                 _loginInProgress = value;
                 LoginButton_Click.RaiseCanExecuteChanged();
-            }
-        }
-
-        private bool _connectInProgress = false;
-        public bool ConnectInProgress
-        {
-            get { return _connectInProgress; }
-            set
-            {
-                _connectInProgress = value;
-                Server_Connect.RaiseCanExecuteChanged();
             }
         }
 
@@ -96,6 +85,13 @@ namespace Anderson.ViewModels
         #endregion
 
         #region Methods
+        public override void SwitchedToThis()
+        {
+            SaveToken = false;
+            Username = "";
+            ServerSet = ServerState.Connect;
+        }
+
         // PasswordBox is sent as object parameter, since it has no DependencyProperty to bind on
         private void AttemptLogin(object obj)
         {
@@ -103,6 +99,7 @@ namespace Anderson.ViewModels
             ErrorMessage = "Attempting to log in...";
             LoginInProgress = true;
             _loginBack.LoginAsync(Username, ((PasswordBox)obj).Password, SaveToken);
+            ((PasswordBox)obj).Clear();
         }
 
         private void AttemptConnection()
@@ -141,8 +138,6 @@ namespace Anderson.ViewModels
                 RaiseViewChanged(ViewModelID.User);
             }
         }
-
- 
         #endregion
     }
 }

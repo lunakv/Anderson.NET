@@ -29,6 +29,7 @@ namespace Anderson.ViewModels
             }
 
             CurrentPageViewModel = _pageViewModels[0];
+            CurrentPageViewModel.SwitchedToThis();
         }
 
         public override ViewModelID ID => ViewModelID.Application;
