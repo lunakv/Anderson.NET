@@ -79,7 +79,7 @@ namespace Anderson.Models
             }
             catch (MatrixException e)
             {
-                throw new ConnectivityException(e.Message, _cp.Url, e);
+                error = e.Message;
             }
             catch (AggregateException e)
             {
@@ -143,10 +143,18 @@ namespace Anderson.Models
         public void LoginWithToken(TokenKey user)
         {
             Func<TokenKey, string> login = LoginWithTokenSync;
-            login.BeginInvoke(user, LoginFinished, null);
+            login.BeginInvoke(user, LoginWithTokenFinished, null);
         }
 
-        public string LoginWithTokenSync(TokenKey user)
+        private void LoginWithTokenFinished(IAsyncResult ar)
+        {
+            var result = (AsyncResult)ar;
+            var login = (Func<TokenKey, string>)result.AsyncDelegate;
+            string error = login.EndInvoke(ar);
+            LoginAttempted?.Invoke(error);
+        }
+
+        private string LoginWithTokenSync(TokenKey user)
         {
             string error = null;
             if (!_tokens.ContainsKey(user)) return "No login token exists for this user.";

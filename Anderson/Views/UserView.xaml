@@ -46,7 +46,7 @@
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
-        <Button Content="Log out" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="700,10,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="{Binding Path=LogoutStatus}" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="700,10,0,0" VerticalAlignment="Top" Width="75"/>
         <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="453" Margin="163,45,0,0" VerticalAlignment="Top" Width="485"/>
         <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Left" Height="511" Margin="21,45,0,0" VerticalAlignment="Top" Width="100" />
         <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="163,514,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">

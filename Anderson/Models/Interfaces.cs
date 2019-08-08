@@ -25,6 +25,7 @@ namespace Anderson.Models
     {
         event RoomReadyHandler RoomReady;
         event NewInviteHandler NewInvite;
+        event RoomJoinHandler RoomJoined;
         MatrixUser CurrentUser { get; }
 
         IEnumerable<MatrixRoom> GetAllRooms();
@@ -37,7 +38,7 @@ namespace Anderson.Models
         IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
         MatrixUser GetPerson(string id);
 
-        MatrixRoom JoinRoom(string roomid);
+        void JoinRoom(string roomid);
 
         void RejectInvite(string roomid);
     }

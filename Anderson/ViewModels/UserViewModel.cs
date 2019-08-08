@@ -21,14 +21,16 @@ namespace Anderson.ViewModels
             _roomBack = roomBack;
             _loginBack = loginBack;
 
-            LogoutButton_Clicked = new DelegateCommand(Logout);
+            LogoutButton_Clicked = new DelegateCommand(Logout, () => LogoutStatus == "Logout");
             Room_Selected = new DelegateCommand(() => { });
-            Message_Sent = new DelegateCommand(SendNewMessage, () => !string.IsNullOrWhiteSpace(SendMessageText));
+            Message_Sent = new DelegateCommand(SendNewMessage, () => !string.IsNullOrWhiteSpace(SendMessageText) && LogoutStatus == "Logout");
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             Invites = new ObservableCollection<InviteViewModel>();
 
             _roomBack.RoomReady += OnRoomReady;
             _roomBack.NewInvite += OnNewInvite;
+            _roomBack.RoomJoined += OnRoomJoined;
+            _loginBack.LogoutAttempted += OnLogoutAttempted;
 
         }
 
@@ -108,23 +110,36 @@ namespace Anderson.ViewModels
             }
         }
 
+        private string _logoutStatus = "Logout";
+        public string LogoutStatus
+        {
+            get { return _logoutStatus; }
+            set
+            {
+                _logoutStatus = value;
+                LogoutButton_Clicked.RaiseCanExecuteChanged();
+                Message_Sent.RaiseCanExecuteChanged();
+                OnPropertyChanged(nameof(LogoutStatus));
+            }
+        }
+
         public ObservableCollection<InviteViewModel> Invites { get; }
         #endregion
 
         #region Methods
         public override void SwitchedToThis()
         {
+            LogoutStatus = "Logout";
             AllRooms = _roomBack.GetAllRooms();
-            _roomBack.Initialize();
             CurrentUser = _roomBack.CurrentUser;
+            _roomBack.Initialize();
         }
 
         private void SendNewMessage()
         {
             if (SelectedRoom == null) return;
 
-            Action<MatrixRoom, string> send = _roomBack.SendTextMessage;
-            send.BeginInvoke(SelectedRoom, SendMessageText.TrimEnd(), null, null);
+            _roomBack.SendTextMessage(SelectedRoom, SendMessageText);
             SendMessageText = "";
         }
 
@@ -154,10 +169,9 @@ namespace Anderson.ViewModels
 
         private void Logout()
         {
-            Action logout = _loginBack.Logout;
-            var wait = logout.BeginInvoke(null, null);
-            logout.EndInvoke(wait);
-            SendViewChange(ViewModelID.Start);
+            LogoutStatus = "Logging out";
+            SendMessageText = "";
+            _loginBack.Logout();
         }
 
         private void LoadRoom(MatrixRoom room)
@@ -170,13 +184,11 @@ namespace Anderson.ViewModels
             }
 
             CurrentRoomView = _roomBack.GetRoomView(room);
-            Action users = () => { CurrentUserList = _roomBack.GetPersonList(room); };
-            users.BeginInvoke(null, null);
+            CurrentUserList = _roomBack.GetPersonList(room);
         }
 
         private void OnRoomReady(MatrixRoom room)
         {
-            AllRooms = _roomBack.GetAllRooms();
             if (room == SelectedRoom)
             {
                 LoadRoom(room);
@@ -188,6 +200,31 @@ namespace Anderson.ViewModels
             var inVM = new InviteViewModel(invite);
             inVM.InviteProcessed += ProcessInvite;
             App.Current.Dispatcher.Invoke(() => Invites.Add(inVM));
+        }
+
+        private void OnRoomJoined(MatrixRoom room, string roomId)
+        {
+            if (room == null)
+            {
+                ErrorMessage = $"Could not join room {roomId}.";
+            }
+            else
+            {
+                AllRooms = _roomBack.GetAllRooms();
+                LoadRoom(room);
+            }
+        }
+
+        private void OnLogoutAttempted(string error)
+        {
+            if (!string.IsNullOrEmpty(error))
+            {
+                ErrorMessage = error;
+            }
+            else
+            {
+                SendViewChange(ViewModelID.Start);
+            }
         }
         #endregion
     }

@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using System.Runtime.Remoting.Messaging;
 
 namespace Anderson.Models
 {
     public delegate void RoomReadyHandler(MatrixRoom room);
+    public delegate void RoomJoinHandler(MatrixRoom room, string roomId);
     public delegate void NewInviteHandler(AndersonInvite invite);
 
     /// <summary>
@@ -36,6 +38,7 @@ namespace Anderson.Models
 
         public event RoomReadyHandler RoomReady;
         public event NewInviteHandler NewInvite;
+        public event RoomJoinHandler RoomJoined;
 
         /// <summary>
         /// Get all the rooms the user has joined
@@ -64,27 +67,32 @@ namespace Anderson.Models
             }
         }
 
-        public MatrixRoom JoinRoom(string roomId)
+        public void JoinRoom(string roomId)
         {
-            MatrixRoom room = null;
-            Action join = () => room = _cp.Api?.JoinRoom(roomId);
-            var wait = join.BeginInvoke(null,null);
-            join.EndInvoke(wait);
+            Func<string, MatrixRoom> join = JoinRoomSync;
+            join.BeginInvoke(roomId, JoinRoomFinished, roomId);
+        }
 
-            if (room == null)
-            {
-                throw new NotSupportedException($"Couldn't join room {roomId}");
-            }
+        private void JoinRoomFinished(IAsyncResult ar)
+        {
+            var result = (AsyncResult)ar;
+            var join = (Func<string, MatrixRoom>)result.AsyncDelegate;
+            MatrixRoom room = join.EndInvoke(ar);
 
-            FetchRoomSync(room);
-            RoomReady?.Invoke(room);
+            FetchRoomAsync(room);
+            RoomJoined?.Invoke(room, ar.AsyncState.ToString());
+        }
+
+        private MatrixRoom JoinRoomSync(string roomId)
+        {
+            MatrixRoom room = _cp.Api?.JoinRoom(roomId);
             return room;
         }
 
         public void RejectInvite(string roomId)
         {
             Action<string> reject = _cp.Api.RejectInvite;
-            reject.BeginInvoke(roomId, null, null);
+            reject.BeginInvoke(roomId, ar => reject.EndInvoke(ar), null);
         }
 
         public void OnInvite(string roomid, MatrixEventRoomInvited evt)
@@ -98,8 +106,7 @@ namespace Anderson.Models
         public void InviteToRoom(MatrixRoom room, string id)
         {
             Action<string> invite = room.InviteToRoom;
-            var wait = invite.BeginInvoke(id, null, null);
-            invite.EndInvoke(wait);
+            invite.BeginInvoke(id, ar => invite.EndInvoke(ar), null);
         }
 
         /// <summary>
@@ -123,7 +130,7 @@ namespace Anderson.Models
             Action<MatrixRoom> fetch = FetchRoomInternal;
             fetch.BeginInvoke(
                 room,
-                _ => { _readyRooms.Add(room); RoomReady?.Invoke(room); },
+                ar => { _readyRooms.Add(room); RoomReady?.Invoke(room); fetch.EndInvoke(ar); },
                 null);
         }
 
@@ -159,11 +166,10 @@ namespace Anderson.Models
 
         public MatrixUser GetPerson(string id)
         {
-            MatrixUser res = null;
-            Action get = () => { res = _cp.Api?.GetUser(id); };
-            var wait = get.BeginInvoke(null, null);
-            get.EndInvoke(wait);
-            return res;
+            if (_cp.Api == null) return null;
+            Func<string,MatrixUser> get =_cp.Api.GetUser;
+            var ar = get?.BeginInvoke(id, null, null);
+            return get.EndInvoke(ar);
         }
 
         public bool IsMessage(MatrixEvent evt)
@@ -185,7 +191,7 @@ namespace Anderson.Models
             if (_events.ContainsKey(room))
             {
                 Func<string,string> send = room.SendText;
-                var wait = send.BeginInvoke(message, null, null);
+                send.BeginInvoke(message, ar => send.EndInvoke(ar), null);
             }    
         }
     }
