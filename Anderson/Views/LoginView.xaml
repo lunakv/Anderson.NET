@@ -24,7 +24,9 @@
                 <Button Content="{Binding Path=ServerSet}" Command="{Binding Path=Server_Connect}" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="65" Height="23"/>
 
             </StackPanel>
-            
+            <GroupBox.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding Path=Server_Connect}"/>
+            </GroupBox.InputBindings>
             
         </GroupBox>
         <Label Content="{Binding Path=ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" Margin="0,211,0,0" VerticalAlignment="Top"/>
