@@ -162,6 +162,8 @@ namespace Anderson.ViewModels
 
         private void ProcessInvite(InviteViewModel invite, bool accept)
         {
+            if (LogoutStatus != "Logout") return;
+
             RemoveInvite(invite);
             if (accept)
             {
@@ -196,7 +198,6 @@ namespace Anderson.ViewModels
         {
             LogoutStatus = "Logging out";
             SendMessageText = "";
-            CurrentRoomView = AndersonRoom.LogoutRoom;
             _loginBack.LogoutAsync();
         }
 
