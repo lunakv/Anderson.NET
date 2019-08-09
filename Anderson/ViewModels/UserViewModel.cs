@@ -25,7 +25,6 @@ namespace Anderson.ViewModels
             _loginBack = loginBack;
 
             LogoutButton_Clicked = new DelegateCommand(Logout, () => LogoutStatus == "Logout");
-            Room_Selected = new DelegateCommand(() => { });
             Message_Sent = new DelegateCommand(SendNewMessage, () => !string.IsNullOrWhiteSpace(SendMessageText) && LogoutStatus == "Logout");
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             Invites = new ObservableCollection<InviteViewModel>();
@@ -40,7 +39,6 @@ namespace Anderson.ViewModels
 
         #region Commands & properties
         public DelegateCommand LogoutButton_Clicked { get; }
-        public DelegateCommand Room_Selected { get; }
         public DelegateCommand Message_Sent { get; }
         public DelegateCommand NewLine_Added { get; }
         public DelegateCommand NewJoin_Clicked { get; }
@@ -227,7 +225,14 @@ namespace Anderson.ViewModels
         {
             var inVM = new InviteViewModel(invite);
             inVM.InviteProcessed += ProcessInvite;
-            App.Current.Dispatcher.Invoke(() => Invites.Add(inVM));
+            if (App.Current?.Dispatcher == null || App.Current.Dispatcher.CheckAccess())
+            {
+                Invites.Add(inVM);
+            }
+            else
+            {
+                App.Current.Dispatcher.Invoke(() => Invites.Add(inVM));
+            }
         }
 
         private void OnRoomJoined(MatrixRoom room, string roomId)

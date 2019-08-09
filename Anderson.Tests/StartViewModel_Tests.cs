@@ -88,7 +88,6 @@ namespace Anderson.Tests
             Assert.True(sm.LoginAllowed);
             Assert.True(string.IsNullOrEmpty(sm.ErrorMessage));
             CollectionAssert.AreEquivalent(mock.tokens.Keys.ToArray(), sm.SavedUsers.Select(x => x.Login).ToArray());
-            Assert.Null(sm.ErrorMessage);  
         } 
 
         [Test]
@@ -106,8 +105,6 @@ namespace Anderson.Tests
             Assert.True(sm.LoginAllowed);
             Assert.True(string.IsNullOrEmpty(sm.ErrorMessage));
             CollectionAssert.AreEquivalent(mock.tokens.Keys.ToArray(), sm.SavedUsers.Select(x => x.Login).ToArray());
-            Assert.Null(sm.ErrorMessage);
-
         }
     }
 }
