@@ -2,6 +2,10 @@
 using Anderson.Structures;
 using Matrix.Client;
 using Prism.Commands;
+using Prism.Interactivity.InteractionRequest;
+using Prism.Ioc;
+using Prism.Services.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -25,6 +29,7 @@ namespace Anderson.ViewModels
             Message_Sent = new DelegateCommand(SendNewMessage, () => !string.IsNullOrWhiteSpace(SendMessageText) && LogoutStatus == "Logout");
             NewLine_Added = new DelegateCommand(() => { SendMessageText += "\r\n"; } );
             Invites = new ObservableCollection<InviteViewModel>();
+            NewJoin_Clicked = new DelegateCommand(JoinNewRoom, () => !string.IsNullOrEmpty(RoomToJoin));
 
             _roomBack.RoomSyncCompleted += OnRoomReady;
             _roomBack.NewInvite += OnNewInvite;
@@ -38,6 +43,7 @@ namespace Anderson.ViewModels
         public DelegateCommand Room_Selected { get; }
         public DelegateCommand Message_Sent { get; }
         public DelegateCommand NewLine_Added { get; }
+        public DelegateCommand NewJoin_Clicked { get; }
 
         public override ViewModelID ID => ViewModelID.User;
 
@@ -122,6 +128,18 @@ namespace Anderson.ViewModels
             }
         }
 
+        private string _roomToJoin;
+        public string RoomToJoin
+        {
+            get { return _roomToJoin; }
+            set
+            {
+                _roomToJoin = value;
+                NewJoin_Clicked.RaiseCanExecuteChanged();
+                OnPropertyChanged(nameof(RoomToJoin));
+            }
+        }
+
         public ObservableCollection<InviteViewModel> Invites { get; }
         #endregion
 
@@ -168,6 +186,14 @@ namespace Anderson.ViewModels
             }
         }
 
+        private void JoinNewRoom()
+        {
+            ErrorMessage = "Joining room...";
+            _roomBack.JoinRoomAsync(RoomToJoin);
+            RoomToJoin = "";
+
+        }
+
         private void Logout()
         {
             LogoutStatus = "Logging out";
@@ -212,7 +238,9 @@ namespace Anderson.ViewModels
             }
             else
             {
+                ErrorMessage = "";
                 AllRooms = _roomBack.GetAllRooms();
+                SelectedRoom = room;
                 LoadRoom(room);
             }
         }

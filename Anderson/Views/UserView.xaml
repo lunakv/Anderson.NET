@@ -47,9 +47,9 @@
     </UserControl.Resources>
     <Grid>
         <Button Content="{Binding Path=LogoutStatus}" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="700,10,0,0" VerticalAlignment="Top" Width="75"/>
-        <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="453" Margin="163,45,0,0" VerticalAlignment="Top" Width="485"/>
-        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Left" Height="511" Margin="21,45,0,0" VerticalAlignment="Top" Width="100" />
-        <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="163,514,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="431">
+        <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="453" Margin="206,45,0,0" VerticalAlignment="Top" Width="442"/>
+        <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Left" Height="453" Margin="21,45,0,0" VerticalAlignment="Top" Width="151" />
+        <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="206,514,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="388">
             <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding Path=Message_Sent}" />
                 <KeyBinding Key="Return" Modifiers="Shift" Command="{StaticResource ResourceKey=InsertNewLine}" />
@@ -59,9 +59,21 @@
         <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="511" Margin="677,45,0,0" VerticalAlignment="Top" Width="98"/>
         <Label Content="{Binding Path=CurrentUser}" HorizontalAlignment="Left" Margin="21,12,0,0" VerticalAlignment="Top" Width="100"/>
         <GroupBox Header="{Binding Path=Invites.Count}" HeaderStringFormat="Invites ({0})" HorizontalAlignment="Left" Height="40" Margin="163,0,0,0" VerticalAlignment="Top" Width="138">
-                <ComboBox ItemsSource="{Binding Invites}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128"/>
+            <ComboBox ItemsSource="{Binding Invites}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128"/>
         </GroupBox>
         <Label Content="{Binding Path=ErrorMessage}" Foreground="Red" HorizontalAlignment="Left" Margin="350,10,0,0" VerticalAlignment="Top"/>
+        <GroupBox Header="New room" HorizontalAlignment="Left" Height="53" Margin="21,503,0,0" VerticalAlignment="Top" Width="151">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="29" VerticalAlignment="Top" Width="141" Margin="0,0,-2,0">
+
+                <TextBox Text="{Binding Path=RoomToJoin, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="111">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding NewJoin_Clicked}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Content="Join" Command="{Binding NewJoin_Clicked}" HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="23"/>
+            </StackPanel>
+        </GroupBox>
 
     </Grid>
 
