@@ -24,13 +24,13 @@ namespace Anderson.Tests
         }
 
         [Test]
-        public void ServerConnect()
+        public void ValidServerConnect()
         {
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
 
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             Assert.True(lvm.Server_Connect.CanExecute());
             lvm.Server_Connect.Execute();
 
@@ -41,12 +41,27 @@ namespace Anderson.Tests
         }
 
         [Test]
+        public void InvalidServerConnect()
+        {
+            var mock = new MockLoginModel();
+            var lvm = new LoginViewModel(mock);
+            lvm.SwitchedToThis();
+
+            lvm.ServerUrl = Utils.InvalidServer;
+            lvm.Server_Connect.Execute();
+
+            Assert.False(string.IsNullOrEmpty(lvm.ErrorMessage));
+            Assert.AreEqual(ServerState.Connect, lvm.ServerSet);
+            Assert.True(lvm.Server_Connect.CanExecute());
+        }
+
+        [Test]
         public void UserEntry()
         {
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             lvm.Server_Connect.Execute();
 
             lvm.Username = Utils.OtherUser.Item1;
@@ -61,7 +76,7 @@ namespace Anderson.Tests
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             lvm.Server_Connect.Execute();
             var pass = new PasswordBox();
 
@@ -81,7 +96,7 @@ namespace Anderson.Tests
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             lvm.Server_Connect.Execute();
             var pass = new PasswordBox();
 
@@ -101,7 +116,7 @@ namespace Anderson.Tests
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             lvm.Server_Connect.Execute();
             var pass = new PasswordBox();
 
@@ -121,7 +136,7 @@ namespace Anderson.Tests
             var mock = new MockLoginModel();
             var lvm = new LoginViewModel(mock);
             lvm.SwitchedToThis();
-            lvm.ServerUrl = "localserver";
+            lvm.ServerUrl = Utils.ValidServer;
             lvm.Server_Connect.Execute();
             var pass = new PasswordBox();
 

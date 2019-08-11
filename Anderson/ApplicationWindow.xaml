@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:Anderson.ViewModels"
         xmlns:v="clr-namespace:Anderson.Views"
         mc:Ignorable="d"
-        Title="Anderson.NET" Height="621" Width="800" Closed="Window_Closed"  >
+        Title="Anderson.NET" Height="621" Width="800" Closed="Window_Closed" ResizeMode="CanMinimize" >
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
             <v:LoginView />

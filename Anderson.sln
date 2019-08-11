@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Matrix", "..\matrix-dotnet-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anderson.Tests", "Anderson.Tests\Anderson.Tests.csproj", "{4D779E23-7BC7-47D7-B76F-F64F2D9BDB48}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Anderson.Installer", "Anderson.Installer\Anderson.Installer.vdproj", "{B22E2BC5-E1D1-4E1B-8B33-31BEB4336108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,9 @@ Global
 		{4D779E23-7BC7-47D7-B76F-F64F2D9BDB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D779E23-7BC7-47D7-B76F-F64F2D9BDB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D779E23-7BC7-47D7-B76F-F64F2D9BDB48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B22E2BC5-E1D1-4E1B-8B33-31BEB4336108}.Debug|Any CPU.ActiveCfg = Debug
+		{B22E2BC5-E1D1-4E1B-8B33-31BEB4336108}.Release|Any CPU.ActiveCfg = Release
+		{B22E2BC5-E1D1-4E1B-8B33-31BEB4336108}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

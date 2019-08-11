@@ -116,6 +116,7 @@ namespace Anderson.ViewModels
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
+                ServerSet = ServerState.Connect;
             }
             else
             {
