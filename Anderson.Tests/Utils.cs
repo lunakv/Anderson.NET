@@ -6,12 +6,14 @@ namespace Anderson.Tests
 {
     class Utils
     {
-        public static TokenKey ValidKey { get; } = new TokenKey("joe", "localserver");
+        public static TokenKey ValidKey { get; } = new TokenKey("joe", ValidServer);
         public static string ValidToken { get; } = "joe";
         public static Tuple<string, string> SavedUser { get; } = new Tuple<string, string>("joe", "joepass");
         public static Tuple<string, string> OtherUser { get; } = new Tuple<string, string>("jane", "janepass");
         public static string WrongUser => "jacob";
         public static string WrongPassword => "wrongpassword";
+        public static string ValidServer = "localserver";
+        public static string InvalidServer = "invalidServer";
 
         public static string CurrentDisplayName = "CurrentUser";
         public static string CurrentUserId = "@currentuser:localserver";

@@ -23,8 +23,15 @@ namespace Anderson.Tests.Mocks
 
         public void ConnectToServerAsync(string url)
         {
-            ConnectedServer = url;
-            ConnectCompleted?.Invoke(null, url);
+            if (url == "https://" + Utils.ValidServer)
+            {
+                ConnectCompleted?.Invoke(null, url);
+                ConnectedServer = url;
+            }
+            else
+            {
+                ConnectCompleted?.Invoke("Couldn't connect to server", url);
+            }
         }
 
         public void DeleteToken(TokenKey userId)
