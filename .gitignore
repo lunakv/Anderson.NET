@@ -613,3 +613,6 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+# Ignore VSCode preferences
+.vscode/
