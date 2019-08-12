@@ -20,10 +20,5 @@ namespace Anderson.Views
             InputBox.Text += Environment.NewLine;
             InputBox.CaretIndex = InputBox.Text.Length;
         }
-
-        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            MessageBox.Show("yaay!");
-        }
     }
 }
