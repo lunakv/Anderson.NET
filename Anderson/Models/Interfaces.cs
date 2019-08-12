@@ -35,7 +35,7 @@ namespace Anderson.Models
         bool IsReady(MatrixRoom room);
         bool IsMessage(MatrixEvent evt);
         void SendTextMessageAsync(MatrixRoom room, string message);
-        IEnumerable<MatrixUser> GetPersonList(MatrixRoom room);
+        IEnumerable<string> GetPersonList(MatrixRoom room);
         MatrixUser GetPerson(string id);
 
         void JoinRoomAsync(string roomid);

@@ -1,6 +1,7 @@
 ﻿using Anderson.Models;
 using Anderson.Structures;
 using Matrix.Client;
+using Matrix.Structures;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;
 using Prism.Ioc;
@@ -102,8 +103,8 @@ namespace Anderson.ViewModels
             }
         }
 
-        private IEnumerable<MatrixUser> _currentUserList;
-        public IEnumerable<MatrixUser> CurrentUserList
+        private IEnumerable<string> _currentUserList;
+        public IEnumerable<string> CurrentUserList
         {
             get { return _currentUserList; }
             set
@@ -146,6 +147,7 @@ namespace Anderson.ViewModels
         {
             base.SwitchedToThis();
             CurrentRoomView = null;
+            CurrentUserList = null;
             LogoutStatus = "Logout";
             AllRooms = _roomBack.GetAllRooms();
             CurrentUser = _roomBack.CurrentUser;

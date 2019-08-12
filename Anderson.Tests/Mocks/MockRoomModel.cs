@@ -41,9 +41,9 @@ namespace Anderson.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        public IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
+        public IEnumerable<string> GetPersonList(MatrixRoom room)
         {
-            if (rooms.ContainsKey(room)) return new[] { CurrentUser };
+            if (rooms.ContainsKey(room)) return new[] { CurrentUser.DisplayName };
             throw new NotImplementedException();
         }
 

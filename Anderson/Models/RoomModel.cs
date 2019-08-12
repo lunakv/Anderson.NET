@@ -18,6 +18,7 @@ namespace Anderson.Models
     public class RoomModel : IRoomModel
     {
         Dictionary<MatrixRoom, AndersonRoom> _events = new Dictionary<MatrixRoom, AndersonRoom>();
+        Dictionary<MatrixRoom, List<MatrixUser>> _users = new Dictionary<MatrixRoom, List<MatrixUser>>();
         List<MatrixRoom> _readyRooms = new List<MatrixRoom>();
         ClientProvider _cp;
 
@@ -160,9 +161,9 @@ namespace Anderson.Models
         /// <summary>
         /// Gets all users connected to a room
         /// </summary>
-        public IEnumerable<MatrixUser> GetPersonList(MatrixRoom room)
+        public IEnumerable<string> GetPersonList(MatrixRoom room)
         {
-            return room.Members.Keys.Select(x => GetPerson(x));
+            return room.Members.Values.Select(x => x.displayname);
         }
 
         /// <summary>
