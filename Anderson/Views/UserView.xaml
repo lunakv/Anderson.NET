@@ -21,20 +21,24 @@
         <HierarchicalDataTemplate DataType="{x:Type str:AndersonParagraph}">
             <StackPanel>
                 <TextBlock Text="{Binding Path=User.DisplayName}" />
-                <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}">
+                <ListBox ItemsSource="{Binding Path=Messages, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 </ListBox>
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <DataTemplate DataType="{x:Type str:AndersonMessage}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0">
                     <TextBlock.Text>
                         <Binding Path="SentTime" Converter="{StaticResource dateConv}"/>
                     </TextBlock.Text>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=Content}"/>
-            </StackPanel>
+                <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Content}"/>
+            </Grid>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type mxc:MatrixUser}">
@@ -47,7 +51,8 @@
     </UserControl.Resources>
     <Grid>
         <Button Content="{Binding Path=LogoutStatus}" Command="{Binding Path=LogoutButton_Clicked}" HorizontalAlignment="Left" Margin="700,10,0,0" VerticalAlignment="Top" Width="75"/>
-        <ListBox ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="453" Margin="206,45,0,0" VerticalAlignment="Top" Width="442"/>
+        <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left" ItemsSource="{Binding Path=CurrentRoomView.Paragraphs, UpdateSourceTrigger=PropertyChanged}" Height="453" Margin="206,45,142,0" VerticalAlignment="Top"/>
+
         <ListBox ItemsSource="{Binding Path=AllRooms}" SelectedItem="{Binding Path=SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalAlignment="Left" Height="453" Margin="21,45,0,0" VerticalAlignment="Top" Width="151" />
         <TextBox x:Name="InputBox" Text="{Binding Path=SendMessageText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="42" Margin="206,514,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="388">
             <TextBox.InputBindings>
@@ -55,7 +60,7 @@
                 <KeyBinding Key="Return" Modifiers="Shift" Command="{StaticResource ResourceKey=InsertNewLine}" />
             </TextBox.InputBindings>
         </TextBox>
-        <Button Content="Send" Command="{Binding Path=Message_Sent}" HorizontalAlignment="Left" Margin="599,514,0,0" VerticalAlignment="Top" Width="49" Height="42"/>
+        <Button Content="Send" Command="{Binding Path=Message_Sent}" Margin="599,514,142,0" VerticalAlignment="Top" Height="42"/>
         <ListBox ItemsSource="{Binding Path=CurrentUserList}" HorizontalAlignment="Left" Height="511" Margin="677,45,0,0" VerticalAlignment="Top" Width="98"/>
         <Label Content="{Binding Path=CurrentUser}" HorizontalAlignment="Left" Margin="21,12,0,0" VerticalAlignment="Top" Width="100"/>
         <GroupBox Header="{Binding Path=Invites.Count}" HeaderStringFormat="Invites ({0})" HorizontalAlignment="Left" Height="40" Margin="206,0,0,0" VerticalAlignment="Top" Width="138">

@@ -1180,12 +1180,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_00FC3852704F4A2BE5A1FAD2ADB6C9C4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_6BC6744AB11B4B95B189C55AF6E2F13C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1891,6 +1885,12 @@
         "OwnerKey" = "8:_14535DC83FCF9409A6D537C7815AD479"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_00FC3852704F4A2BE5A1FAD2ADB6C9C4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -1909,6 +1909,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -1925,6 +1933,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -6134,7 +6158,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Anderson.NET"
         "ProductCode" = "8:{22DDB47B-9F34-40B0-B780-DDABBF62A780}"
-        "PackageCode" = "8:{ED395202-4004-4607-AEE4-4C82BF698F2E}"
+        "PackageCode" = "8:{F014A6BA-3B18-4908-8B7E-C9A070261D59}"
         "UpgradeCode" = "8:{387DF192-FCC1-4584-BCFC-8ABB0288C7AA}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
@@ -6256,7 +6280,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E8D0191E06EA45A3A6954FBC089272BC"
             {
-            "Name" = "8:Anderson"
+            "Name" = "8:Anderson.NET"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
