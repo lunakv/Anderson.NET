@@ -97,7 +97,6 @@ namespace Anderson.ViewModels
         private void OnLoginFinished(string error)
         {
             _loginBack.LoginCompleted -= OnLoginFinished;
-            LoginAllowed = true;
             if (!string.IsNullOrEmpty(error))
             {
                 ErrorMessage = error;
@@ -106,6 +105,7 @@ namespace Anderson.ViewModels
             {
                 RaiseViewChanged(ViewModelID.User);
             }
+            LoginAllowed = true;
         }
         #endregion
     }

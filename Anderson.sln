@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anderson", "Anderson\Anderson.csproj", "{D2B1E828-5A91-4DCC-AC13-FDEFFFF2BB7F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Matrix", "..\matrix-dotnet-sdk\Matrix\Matrix.csproj", "{23178CC4-2857-495A-BD61-8983CF8D9196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Matrix", "matrix-dotnet-sdk\Matrix\Matrix.csproj", "{23178CC4-2857-495A-BD61-8983CF8D9196}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anderson.Tests", "Anderson.Tests\Anderson.Tests.csproj", "{4D779E23-7BC7-47D7-B76F-F64F2D9BDB48}"
 EndProject
