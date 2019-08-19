@@ -76,7 +76,7 @@ namespace Anderson.ViewModels
         {
             // disposing nonexistent sync threads raises an exception
             if (_clientSyncRunning)
-                cp.DisposeApiClient();
+                cp.DisposeClient();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Anderson.Models
 
         private void OnClientRestart()
         {
-            _cp.Api.OnInvite += OnInvite;
+            _cp.Client.OnInvite += OnInvite;
         }
 
 
@@ -46,7 +46,7 @@ namespace Anderson.Models
         /// </summary>
         public IEnumerable<MatrixRoom> GetAllRooms()
         {
-            return _cp.Api.GetAllRooms();
+            return _cp.Client.GetAllRooms();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Anderson.Models
         /// </summary>
         public void InitializeRoomsAsync()
         {
-            foreach (MatrixRoom room in _cp.Api?.GetAllRooms())
+            foreach (MatrixRoom room in _cp.Client?.GetAllRooms())
             {
                 _events[room] = new AndersonRoom(room);
                 FetchRoomAsync(room);
@@ -91,7 +91,7 @@ namespace Anderson.Models
             {
                 roomId += ":" + _cp.UrlBody;
             }
-            MatrixRoom room = _cp.Api?.JoinRoom(roomId);
+            MatrixRoom room = _cp.Client?.JoinRoom(roomId);
             return room;
         }
 
@@ -100,7 +100,7 @@ namespace Anderson.Models
         /// </summary>
         public void RejectInviteAsync(string roomId)
         {
-            Action<string> reject = _cp.Api.RejectInvite;
+            Action<string> reject = _cp.Client.RejectInvite;
             reject.BeginInvoke(roomId, ar => reject.EndInvoke(ar), null);
         }
 
@@ -171,8 +171,8 @@ namespace Anderson.Models
         /// </summary>
         public MatrixUser GetPerson(string id)
         {
-            if (_cp.Api == null) return null;
-            Func<string,MatrixUser> get =_cp.Api.GetUser;
+            if (_cp.Client == null) return null;
+            Func<string,MatrixUser> get =_cp.Client.GetUser;
             var ar = get?.BeginInvoke(id, null, null);
             return get.EndInvoke(ar);
         }

@@ -74,11 +74,11 @@ namespace Anderson.Models
             string error = null;
             try
             {
-                MatrixLoginResponse response = _cp.Api.LoginWithPassword(username, password);
+                MatrixLoginResponse response = _cp.Client.LoginWithPassword(username, password);
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForAssembly();
 
                 if (saveToken) SaveToken(response, _tokenPath, isoStore);
-                _cp.Api.StartSync();
+                _cp.Client.StartSync();
             }
             catch (MatrixException e)
             {
@@ -139,7 +139,7 @@ namespace Anderson.Models
 
         private string Logout()
         {
-            _cp.RestartApi();
+            _cp.RestartClient();
             return null;
         }
 
@@ -169,8 +169,8 @@ namespace Anderson.Models
 
             try
             {
-                _cp.Api.UseExistingToken(user.UserId, _tokens[user]);
-                _cp.Api.StartSync();
+                _cp.Client.UseExistingToken(user.UserId, _tokens[user]);
+                _cp.Client.StartSync();
             }
             catch (MatrixException e)
             {

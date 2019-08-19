@@ -5,7 +5,7 @@ namespace Anderson.Models
 {
     public class ClientProvider
     {
-        public MatrixClient Api { get; private set; }
+        public MatrixClient Client { get; private set; }
         public string Url { get; private set; }
         public string UrlBody { get; private set; }
 
@@ -16,20 +16,20 @@ namespace Anderson.Models
             Url = url;
             UrlBody = url.Replace("http://", "");
             UrlBody = UrlBody.Replace("https://", "");
-            Api = new MatrixClient(url);
+            Client = new MatrixClient(url);
             ClientStarted?.Invoke();
         }
 
-        public void RestartApi()
+        public void RestartClient()
         {
-            Api.Dispose();
+            Client?.Dispose();
             EstablishConnection(Url);
         }
 
-        public void DisposeApiClient()
+        public void DisposeClient()
         {
-            Api?.Dispose();
-            Api = null;
+            Client?.Dispose();
+            Client = null;
         }
     }
 }
